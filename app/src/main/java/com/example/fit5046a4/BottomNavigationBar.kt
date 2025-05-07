@@ -22,14 +22,16 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.res.painterResource
 
 @Composable
 fun BottomNavigationBar(){
     val navRoutes = listOf(
-        NavRoute("home", Icons.Filled.Home, "Home"),
-        NavRoute("fridge", Icons.Filled.AddCircle, "Fridge"),
-        NavRoute("cook", Icons.Filled.Search, "Cook"),
-        NavRoute("report", Icons.Filled.Info, "Report")
+        //icon is 32 px
+        NavRoute("home", R.drawable.home_20, "Home"),
+        NavRoute("fridge", R.drawable.refrigerator_20 , "Fridge"),
+        NavRoute("cook", R.drawable.mix_20, "Cook"),
+        NavRoute("report", R.drawable.report, "Report")
     )
 
     val navController = rememberNavController()
@@ -46,8 +48,12 @@ fun BottomNavigationBar(){
 
                 navRoutes.forEach{ navRoute ->
                     BottomNavigationItem(
-                        icon = { Icon(navRoute.icon,
-                            contentDescription = navRoute.label) },
+                        icon = {
+                            Icon(
+                                painter = painterResource(id = navRoute.iconRes),
+                                contentDescription = navRoute.label
+                            )
+                        },
                         label = { Text(navRoute.label)},
                         selected = currentDestination?.route == navRoute.route,
                         onClick = {
