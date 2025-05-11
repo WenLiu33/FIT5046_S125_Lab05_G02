@@ -4,12 +4,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.BottomNavigation
 //noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.BottomNavigationItem
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material3.Icon
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,12 +19,15 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview(showBackground = true)
 @Composable
-fun BottomNavigationBar(){
+fun BottomNavigationBarAndTopBar() {
     val navRoutes = listOf(
-        //icon is 32 px
         NavRoute("home", R.drawable.home_20, "Home"),
         NavRoute("fridge", R.drawable.refrigerator_20 , "Fridge"),
         NavRoute("cook", R.drawable.mix_20, "Cook"),
@@ -37,6 +37,29 @@ fun BottomNavigationBar(){
     val navController = rememberNavController()
 
     Scaffold(
+        topBar = {
+            val navBackStackEntry by navController.currentBackStackEntryAsState()
+            val currentRoute = navBackStackEntry?.destination?.route
+
+            CenterAlignedTopAppBar(
+                title = {
+                    Text(
+                        text = when (currentRoute) {
+                            "home" -> "Home"
+                            "fridge" -> "My Fridge"
+                            "cook" -> "Cook a Meal"
+                            "report" -> "Report"
+                            else -> ""
+                        },
+                        style = MaterialTheme.typography.titleLarge
+                    )
+                },
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+            )
+        },
         bottomBar = {
             BottomNavigation(
                 modifier = Modifier.padding(bottom = 2.dp),
@@ -46,7 +69,7 @@ fun BottomNavigationBar(){
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                 val currentDestination = navBackStackEntry?.destination
 
-                navRoutes.forEach{ navRoute ->
+                navRoutes.forEach { navRoute ->
                     BottomNavigationItem(
                         icon = {
                             Icon(
@@ -54,33 +77,31 @@ fun BottomNavigationBar(){
                                 contentDescription = navRoute.label
                             )
                         },
-                        label = { Text(navRoute.label)},
+                        label = { Text(navRoute.label) },
                         selected = currentDestination?.route == navRoute.route,
                         onClick = {
-                            navController.navigate(navRoute.route){
-                                popUpTo(navController.graph.findStartDestination().id){
+                            navController.navigate(navRoute.route) {
+                                popUpTo(navController.graph.findStartDestination().id) {
                                     inclusive = false
                                 }
-                                launchSingleTop =true
-                                restoreState =true
+                                launchSingleTop = true
+                                restoreState = true
                             }
                         }
                     )
                 }
             }
         }
-    ){
-        paddingValues ->
+    ) { paddingValues ->
         NavHost(
             navController = navController,
             startDestination = "home",
             modifier = Modifier.padding(paddingValues)
-        ){
+        ) {
             composable("home") { Home() }
             composable("cook") { Cook() }
             composable("fridge") { Fridge() }
             composable("report") { Report() }
         }
     }
-
 }
