@@ -1,5 +1,6 @@
 package com.example.fit5046a4
 
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -20,27 +21,40 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.*
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import com.example.fit5046a4.ui.theme.FIT5046A4Theme
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
-
-
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
-fun Cook(modifier: Modifier = Modifier) {
+fun Cook(viewModel: RecipeViewModel = viewModel(), modifier: Modifier = Modifier) {
+    // Meal options and selected meal
     val mealOptions = listOf("Breakfast", "Lunch", "Dinner")
-    var selectMeal by remember { mutableStateOf("Breakfast") }
-    val fakeRecipes = listOf("Recipe 1 from API", "Recipe 2 from API", "Recipe 3 from API")
+    var selectedMeal by remember { mutableStateOf("Breakfast") }
+
+    // Observing LiveData from RecipeViewModel
+    val breakfastCategories by viewModel.breakfastCategory.observeAsState(emptyList())
+    val lunchCategories by viewModel.lunchCategory.observeAsState(emptyList())
+    val dinnerCategories by viewModel.dinnerCategory.observeAsState(emptyList())
+
+    // Log each category in breakfastCategories for debugging
+    breakfastCategories.forEach { category ->
+        Log.d("Category Name", category.strCategory ?: "Unknown")
+    }
+
+    // Trigger ViewModel to fetch categories when the screen is first shown
+    LaunchedEffect(Unit) {
+        viewModel.fetchCategories()
+    }
 
     Column(
         modifier = modifier
@@ -82,7 +96,7 @@ fun Cook(modifier: Modifier = Modifier) {
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = selectMeal)
+                Text(text = selectedMeal)
                 Icon(
                     imageVector = Icons.Filled.ArrowDropDown,
                     contentDescription = "Dropdown Arrow"
@@ -98,7 +112,7 @@ fun Cook(modifier: Modifier = Modifier) {
                     DropdownMenuItem(
                         text = { Text(meal) },
                         onClick = {
-                            selectMeal = meal
+                            selectedMeal = meal
                             expanded = false
                         }
                     )
@@ -106,7 +120,16 @@ fun Cook(modifier: Modifier = Modifier) {
             }
         }
 
-        fakeRecipes.forEach { recipe ->
+        // Display categories based on selected meal type
+        val categories = when (selectedMeal) {
+            "Breakfast" -> breakfastCategories
+            "Lunch" -> lunchCategories
+            "Dinner" -> dinnerCategories
+            else -> emptyList()
+        }
+
+        categories.forEach { category ->
+            Log.d("Category Type", "category type: ${category::class.java}")
             Surface(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -115,7 +138,7 @@ fun Cook(modifier: Modifier = Modifier) {
                 tonalElevation = 2.dp
             ) {
                 Text(
-                    text = recipe,
+                    text = category.strCategory ?: "Unknown category",
                     modifier = Modifier.padding(16.dp),
                     style = MaterialTheme.typography.bodyLarge
                 )
@@ -123,7 +146,7 @@ fun Cook(modifier: Modifier = Modifier) {
         }
 
         Button(
-            onClick = { /* TODO */ },
+            onClick = { /* TODO: Implement Cooking action */ },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 24.dp),
@@ -133,8 +156,6 @@ fun Cook(modifier: Modifier = Modifier) {
     }
 }
 
-
-
 @Preview(showBackground = true)
 @Composable
 fun CookMealScreenPreview() {
@@ -142,5 +163,3 @@ fun CookMealScreenPreview() {
         Cook()
     }
 }
-
-
