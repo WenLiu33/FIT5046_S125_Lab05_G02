@@ -41,6 +41,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.androidx.runtime.livedata)
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
@@ -62,7 +63,18 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
+    //
     implementation (libs.retrofit)
     implementation (libs.converter.gson)
     implementation(libs.gson)
+
+    // work manager dependency
+    implementation(libs.androidx.work.runtime.ktx)
+
+    // Firebase (if syncing with Firestore)
+    implementation (libs.firebase.firestore.ktx)
+
+    // Notification dependencies
+    implementation (libs.androidx.core.ktx.v1100) // For working with notifications
+
 }
