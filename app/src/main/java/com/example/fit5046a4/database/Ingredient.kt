@@ -11,5 +11,6 @@ data class Ingredient(
     val quantity: Int,
     val unit: String,
     val unitPrice: Float,
+    val insertDate: Date,
     val expiryDate: Date
 )

@@ -1,26 +1,256 @@
 package com.example.fit5046a4
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.Divider
+import androidx.compose.material.Scaffold
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.fit5046a4.ui.theme.FIT5046A4Theme
+import monthFormatter
 
 @Composable
-fun Report() {
+fun TotalFridgeValue(viewModel: IngredientViewModel = viewModel()){
+    val ingredients by viewModel.allIngredients.collectAsState(initial = emptyList())
+
+    var totalValue = 0f
+    if(ingredients.isEmpty()){
+        Text("Your fridge is empty")
+    }else{
+        ingredients.forEach{ ingredient ->
+            totalValue += ingredient.unitPrice * ingredient.quantity
+        }
+    }
+    Text(
+        text = "💰 Total value: \$${"%.2f".format(totalValue)}",
+        style = MaterialTheme.typography.bodyLarge
+    )
+}
+
+@Composable
+fun ExpiringIngredientsList(viewModel: IngredientViewModel = viewModel()) {
+    val ingredients by viewModel.allIngredients.collectAsState(
+        initial = emptyList())
+
+    val expiringSoon = remember(ingredients) {
+        val cutOff = System.currentTimeMillis() + 5.dayInMillis
+        ingredients.filter { it.expiryDate.time <= cutOff }
+    }
+
+    if (expiringSoon.isEmpty()) {
+        // Show a friendly “empty state” message
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                "Nothing is expiring soon!",
+                style = MaterialTheme.typography.bodyLarge,
+                textAlign = TextAlign.Center
+            )
+        }
+    } else {
+        Row(modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween){
+            Text("Ingredients", modifier = Modifier.weight(1f))
+            Text("Quantity", modifier = Modifier.weight(0.4f))
+            Text("Expiry date")
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        LazyColumn(
+            modifier = Modifier.height(200.dp),
+            contentPadding = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(expiringSoon) { ingredient ->
+                Row(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(ingredient.name, modifier = Modifier.weight(1f) )
+                    Text("${ingredient.quantity} ${ingredient.unit}", modifier = Modifier.weight(0.4f) )
+                    Text("${monthFormatter.format(ingredient.expiryDate)}",
+                        textAlign = TextAlign.End )
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+fun IngredientsRunningLow(viewModel: IngredientViewModel = viewModel()) {
+    val ingredients by viewModel.allIngredients.collectAsState(
+        initial = emptyList())
+
+    val runningLow = remember(ingredients) {
+        ingredients.filter { it.quantity <= 5 }
+    }
+
+    if (runningLow.isEmpty()) {
+        // Show a friendly “empty state” message
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                "Nothing is running low!",
+                style = MaterialTheme.typography.bodyLarge,
+                textAlign = TextAlign.Center
+            )
+        }
+    } else {
+        Row(modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween){
+            Text("Ingredients", modifier = Modifier.weight(1f))
+            Text("Quantity", modifier = Modifier.weight(0.3f))
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        LazyColumn(
+            modifier = Modifier.height(200.dp),
+            contentPadding = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(runningLow) { ingredient ->
+                Row(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(ingredient.name, modifier = Modifier.weight(1f) )
+                    Text("${ingredient.quantity} ${ingredient.unit}", modifier = Modifier.weight(0.2f) )
+                }
+            }
+        }
+    }
+}
+
+
+
+@Composable
+fun LineChart() {
     Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(text = "Report",
-                style = MaterialTheme.typography.headlineMedium)
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(250.dp)
+            .background(color = Color(0xFF633B48)),
+        contentAlignment = Alignment.Center
+    ) {
+//        Image(
+//            painter = painterResource(id = R.drawable.linechart),
+//            contentDescription = "Fridge Image",
+//            contentScale = ContentScale.Crop,
+//            modifier = Modifier.fillMaxSize()
+//        )
+    }
+}
+
+
+@Composable
+fun Report(
+    modifier: Modifier = Modifier
+) {
+    Scaffold(
+        modifier  = modifier.fillMaxSize(),
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .padding(innerPadding)  // push content above the bar
+                .padding(horizontal = 16.dp, vertical = 24.dp)
+                .fillMaxSize(),
+            verticalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text("Value of the fridge",
+                color = MaterialTheme.colorScheme.primaryContainer,
+                style    = MaterialTheme.typography.titleLarge )
             Spacer(modifier = Modifier.height(16.dp))
-            Text("Welcome to Navigation app",
-                style = MaterialTheme.typography.bodyLarge) } }
+            TotalFridgeValue()
+            Spacer(modifier = Modifier.height(8.dp))
+            Divider(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
+                color     = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
+                thickness = 2.dp
+            )
+
+            Text("Ingredients Expiring in 5 days",
+                color = MaterialTheme.colorScheme.primaryContainer,
+                style    = MaterialTheme.typography.titleLarge)
+            Spacer(modifier = Modifier.height(16.dp))
+            ExpiringIngredientsList()
+            Spacer(modifier = Modifier.height(8.dp))
+            Divider(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
+                color     = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
+                thickness = 2.dp
+            )
+
+            Text("Money Spent on Grocery This Week",
+                color = MaterialTheme.colorScheme.primaryContainer,
+                style    = MaterialTheme.typography.titleLarge)
+            Spacer(modifier = Modifier.height(16.dp))
+            Divider(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
+                color     = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
+                thickness = 2.dp
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            // LineChart()
+
+//            Spacer(modifier = Modifier.height(16.dp))
+            Text("Ingredients running low",
+                color = MaterialTheme.colorScheme.primaryContainer,
+                style    = MaterialTheme.typography.titleLarge)
+            Spacer(modifier = Modifier.height(16.dp))
+            IngredientsRunningLow()
+            Spacer(modifier = Modifier.height(8.dp))
+            Divider(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
+                color     = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
+                thickness = 2.dp
+            )
+        }
+    }
+}
+
+
+@Preview(showBackground = true)
+@Composable
+fun ReportPreview(){
+    FIT5046A4Theme {
+        Report()
+    }
 }

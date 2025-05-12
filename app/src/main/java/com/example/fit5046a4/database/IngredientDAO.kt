@@ -15,10 +15,16 @@ interface IngredientDAO {
     @Insert
     suspend fun insertIngredient(ingredient: Ingredient)
 
+    @Insert
+    suspend fun insertIngredients(ingredients: List<Ingredient>)
+
     @Update
     suspend fun updateIngredient(ingredient: Ingredient)
 
     @Delete
     suspend fun deleteIngredient(ingredient: Ingredient)
+
+    @Query("SELECT name, AVG(expiryDate - insertDate) AS averageLife FROM Ingredient Group by name" )
+    fun averageIngredientLife():Flow<List<IngredientLife>>
 
 }
