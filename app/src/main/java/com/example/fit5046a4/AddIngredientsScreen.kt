@@ -4,6 +4,7 @@ import android.graphics.Paint.Align
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,6 +16,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -34,19 +37,29 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.tooling.preview.Preview
+import com.example.fit5046a4.database.Ingredient
+import java.util.Date
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 
 //UI SCREEN ONLY
+//Used to guide placement
 @Composable
-fun AddIngredientScreen() {
+fun AddIngredientScreenUI() {
     val context = LocalContext.current
 
 
@@ -208,3 +221,73 @@ fun AddIngredientScreen() {
         }
     }
 }
+
+//This is the screen for adding ingredients
+//This will be inserted into existing database
+@Composable
+fun AddIngredientsToDB(viewModel: IngredientViewModel) {
+    val ingredients by viewModel.allIngredients.collectAsState(initial = emptyList())
+    var name by remember { mutableStateOf("") }
+    var quantity by remember { mutableStateOf("") }
+    var unit by remember { mutableStateOf("") }
+    var unitPrice by remember { mutableStateOf("") }
+    var selectedIngredient by remember { mutableStateOf<Ingredient?>(null) }
+    val context = LocalContext.current
+
+}
+
+//This is the Screen with AddIngredientsToDB to call when user clicks 'Add Ingredients'
+//in the Fridge Screen
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AddIngredientScreen() {
+    //Layout of the screen with grocery image
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth(), // full width so we can center
+                        contentAlignment = Alignment.Center // center its content
+                    ) {
+                        Text(text = "Add Ingredients")
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color(0xFFD7DEFB),
+                    titleContentColor = MaterialTheme.colorScheme.primary,
+                )
+            )
+        }
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .padding(24.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp),
+
+            ) {
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            val image: Painter = painterResource(R.drawable.grocery)
+            Image(
+                painter = image,
+                contentDescription = "Grocery Image",
+                modifier = Modifier
+                    .size(150.dp)
+                    .align(Alignment.CenterHorizontally)
+            )
+            //AddIngredientsToDB function to be placed here
+        }
+    }
+}
+
+//@Preview(showBackground = true)
+//@Composable
+//fun AddIngredientsPreview() {
+//    AddIngredientScreen()
+//}
+
