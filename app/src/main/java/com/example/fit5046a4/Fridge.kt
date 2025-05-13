@@ -1,6 +1,7 @@
 package com.example.fit5046a4
 
 
+import android.app.Application
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -33,7 +34,10 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
@@ -41,10 +45,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 
+//This was the UI implementation for Fridge
+//To be deleted after Fridge is properly implemented
+//This is just used as a guide for now :)
 @Composable
-fun Fridge() {
+fun Fridge2() {
     val context = LocalContext.current
 
 
@@ -60,17 +68,14 @@ fun Fridge() {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(modifier = Modifier.height(50.dp))
-
         val image: Painter = painterResource(id = R.drawable.refrigerator)
         Image(
             painter = image, contentDescription = "Fridge Image", modifier = Modifier.size(150.dp)
         )
 
-
         Spacer(modifier = Modifier.height(50.dp))
         Text("Here's what you've got right now:", fontSize = 20.sp)
         Spacer(modifier = Modifier.height(30.dp))
-
 
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()
@@ -101,7 +106,6 @@ fun Fridge() {
             }
         }
 
-
         Spacer(modifier = Modifier.height(50.dp))
         ElevatedButton(
             onClick = {
@@ -119,3 +123,104 @@ fun Fridge() {
 
     }
 }
+
+//This is the implementation of FridgeItemList
+//This function will display the current list of ingredients as a lazy list
+//The list of ingredients will be displayed from the ingredient database
+@Composable
+//From ingredient database
+fun FridgeItemList(viewModel: IngredientViewModel = viewModel()) {
+    val ingredients by viewModel.allIngredients.collectAsState(initial = emptyList())
+    val context = LocalContext.current
+
+    //If Ingredients isn't empty, it will be displayed in lazy Column
+    if (ingredients.isEmpty()) {
+        Text("Your fridge is currently empty! Add Ingredients below")
+    } else {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(300.dp)
+                .padding(8.dp)
+        ) {
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier
+                    .fillMaxSize()
+            ) {
+                items(ingredients) { ingredient ->
+                    Surface(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 4.dp),
+                        shape = RoundedCornerShape(8.dp),
+                        tonalElevation = 2.dp
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(10.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                //Displays the ingredient, quantity and unit
+                                text = "${ingredient.name} x ${ingredient.quantity} ${ingredient.unit}",
+                                modifier = Modifier.weight(1f),
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                            Text(
+                                text = "edit",
+                                color = Color(0xFF03A9F4),
+                                modifier = Modifier.clickable {
+                                    Toast.makeText(
+                                        context,
+                                        "Edit ${ingredient.name}",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+//This is the Fridge function that lays out the components
+//The first component will be the FridgeItemList
+//The second component will be the AddIngredients Function
+@Composable
+fun Fridge() {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Spacer(modifier = Modifier.height(50.dp))
+
+        val image: Painter = painterResource(id = R.drawable.refrigerator)
+        Image(
+            painter = image, contentDescription = "Fridge Image", modifier = Modifier.size(150.dp)
+        )
+
+        Spacer(modifier = Modifier.height(50.dp))
+        Text("Here's what you've got right now:", fontSize = 20.sp)
+        Spacer(modifier = Modifier.height(30.dp))
+        FridgeItemList()
+    }
+}
+
+//This is the function to edit the Ingredients quickly
+@Composable
+fun EditIngredients(){
+    Text("TO DO")
+}
+
+//This is the function to AddIngredients
+@Composable
+fun AddIngredients(){
+    Text("TO DO")
+}
+
+
