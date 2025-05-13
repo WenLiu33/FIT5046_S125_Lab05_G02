@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 
-//import java.util.Locale.Category
+
 
 
 class RecipeViewModel : ViewModel() {

@@ -63,16 +63,13 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-    //
+    //implement api
     implementation (libs.retrofit)
     implementation (libs.converter.gson)
     implementation(libs.gson)
 
     // work manager dependency
     implementation(libs.androidx.work.runtime.ktx)
-
-    // Firebase (if syncing with Firestore)
-    implementation (libs.firebase.firestore.ktx)
 
     // Notification dependencies
     implementation (libs.androidx.core.ktx.v1100) // For working with notifications
