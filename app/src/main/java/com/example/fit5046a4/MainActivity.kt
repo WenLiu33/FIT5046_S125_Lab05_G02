@@ -19,7 +19,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.fit5046a4.ui.theme.FIT5046A4Theme
+import java.util.stream.DoubleStream.builder
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,7 +36,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
 
 //@Composable
 //fun Greeting(name: String, modifier: Modifier = Modifier) {
