@@ -50,6 +50,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.fit5046a4.database.Ingredient
 import java.util.Date
 
@@ -231,8 +232,102 @@ fun AddIngredientsToDB(viewModel: IngredientViewModel) {
     var quantity by remember { mutableStateOf("") }
     var unit by remember { mutableStateOf("") }
     var unitPrice by remember { mutableStateOf("") }
-    var selectedIngredient by remember { mutableStateOf<Ingredient?>(null) }
+    //var selectedIngredient by remember { mutableStateOf<Ingredient?>(null) }
     val context = LocalContext.current
+
+    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        Text("Ingredient:")
+        OutlinedTextField(
+            value = name,
+            onValueChange = { name = it },
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(10.dp))
+                .background(Color(0xFFD0E8FF).copy(alpha = 0.1f)),
+            shape = RoundedCornerShape(10.dp)
+        )
+
+        Text("Quantity & Unit")
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            //TO DO: Make drop-down
+            OutlinedTextField(
+                value = quantity,
+                onValueChange = { quantity = it },
+                placeholder = { Text("Qty") },
+                modifier = Modifier
+                    .weight(1f)
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(Color(0xFFD0E8FF).copy(alpha = 0.1f)),
+                singleLine = true,
+                shape = RoundedCornerShape(10.dp)
+            )
+
+            OutlinedTextField(
+                value = unit,
+                onValueChange = { unit = it },
+                placeholder = { Text("Unit") },
+                modifier = Modifier
+                    .weight(1f)
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(Color(0xFFD0E8FF).copy(alpha = 0.1f)),
+                singleLine = true,
+                shape = RoundedCornerShape(10.dp)
+            )
+        }
+        //TO DO: Make it so user can only enter numbers
+        //numerical keyboard to show up?
+        Text("Unit Price")
+        OutlinedTextField(
+            value = unitPrice,
+            onValueChange = { unitPrice = it },
+            placeholder = { Text("e.g. 2.50") },
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(10.dp))
+                .background(Color(0xFFD0E8FF).copy(alpha = 0.1f)),
+            singleLine = true,
+            shape = RoundedCornerShape(10.dp)
+        )
+
+        Spacer(modifier = Modifier.height(20.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            //Checking inputs for clean data entry into the Database//
+            //TO DO: More validation checks
+            ElevatedButton(
+                onClick = {
+                    if (name.isNotBlank() && quantity.isNotBlank() && unit.isNotBlank() && unitPrice.isNotBlank()) {
+                        val ingredient = Ingredient(
+                            name = name.trim().replaceFirstChar { it.uppercaseChar() },
+                            quantity = quantity.toIntOrNull() ?: 0,
+                            unit = unit.trim(),
+                            unitPrice = unitPrice.toFloatOrNull() ?: 0f,
+                            insertDate = Date(),
+                            expiryDate = Date()
+                        )
+                        viewModel.insertIngredient(ingredient)
+                        name = ""; quantity = ""; unit = ""; unitPrice = ""
+                        Toast.makeText(context, "Ingredient added!", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(context, "Please fill all fields", Toast.LENGTH_SHORT).show()
+                    }
+                },
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Add",
+                    modifier = Modifier.padding(end = 8.dp)
+                )
+                Text(text = "Add Ingredient")
+            }
+        }
+    }
 
 }
 
@@ -280,7 +375,7 @@ fun AddIngredientScreen() {
                     .size(150.dp)
                     .align(Alignment.CenterHorizontally)
             )
-            //AddIngredientsToDB function to be placed here
+            AddIngredientsToDB(viewModel = viewModel())
         }
     }
 }
