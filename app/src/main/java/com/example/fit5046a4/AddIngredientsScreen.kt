@@ -1,7 +1,9 @@
 package com.example.fit5046a4
 
 import android.graphics.Paint.Align
+import android.os.Build
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -40,6 +42,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DropdownMenu
@@ -60,6 +63,7 @@ import androidx.compose.material3.contentColorFor
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -77,11 +81,11 @@ import java.util.Locale
 
 //*******FUNCTIONS BELOW********
 
-
 //This function is the field inputs for adding ingredients
 //This will be inserted into existing database
 //After adding the ingredient or cancelling, it will automatically redirect to Fridge Screen
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddIngredientsToDB(viewModel: IngredientViewModel) {
@@ -90,8 +94,9 @@ fun AddIngredientsToDB(viewModel: IngredientViewModel) {
     var quantity by remember { mutableStateOf("") }
     var unit by remember { mutableStateOf("") }
     var unitPrice by remember { mutableStateOf("") }
-    var expiryDateText by remember { mutableStateOf("")}
+    var expiryDateText by remember { mutableStateOf("") }
     //var selectedIngredient by remember { mutableStateOf<Ingredient?>(null) }
+    var category by remember { mutableStateOf("") }
     val context = LocalContext.current
 
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -148,85 +153,112 @@ fun AddIngredientsToDB(viewModel: IngredientViewModel) {
                 modifier = Modifier.weight(1f)
             )
         }
-            //Accepts input from a numerical keyboard only
-            //To enable on emulator, go to settings, disable stylus input
-            //and enable on screen keyboard
-            Text("Unit Price:")
-            TextField(
-                value = unitPrice,
-                onValueChange = { unitPrice = it },
-                placeholder = { Text("e.g. 2.50") },
+        //Accepts input from a numerical keyboard only
+        //To enable on emulator, go to settings, disable stylus input
+        //and enable on screen keyboard
+        Text("Unit Price:")
+        TextField(
+            value = unitPrice,
+            onValueChange = { unitPrice = it },
+            placeholder = { Text("e.g. 2.50") },
 
-                //numerical keyboard
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(10.dp)),
-                singleLine = true,
-                shape = RoundedCornerShape(10.dp),
+            //numerical keyboard
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(10.dp)),
+            singleLine = true,
+            shape = RoundedCornerShape(10.dp),
 
-                // when user clicks on the textfield, it changes colour to indicate click
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = Color(0xFFD7DEFB).copy(alpha = 0.6f),
-                    unfocusedContainerColor = Color(0xFFD7DEFB).copy(alpha = 0.2f)
+            // when user clicks on the textfield, it changes colour to indicate click
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = Color(0xFFD7DEFB).copy(alpha = 0.6f),
+                unfocusedContainerColor = Color(0xFFD7DEFB).copy(alpha = 0.2f)
 
-                )
             )
+        )
 
-            Text("Expiry Date:", modifier = Modifier.padding(top = 12.dp))
+        Text("Category:", modifier = Modifier.padding(top = 12.dp))
 
-            //ExpiryDatePickerField() is called here so a calender is displayed
-            //User selects expiry date on the calender date-picker pop-up
-            ExpiryDatePickerField(
-                expiryDate = expiryDateText,
-                onDateSelected = {expiryDateText = it}
-            )
+        CategoryDropDown(
+            selectedCategory = category,
+            onCategorySelected = { category = it }
+        )
 
-            Spacer(modifier = Modifier.height(20.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center
+        Text("Expiry Date:", modifier = Modifier.padding(top = 12.dp))
+
+        //ExpiryDatePickerField() is called here so a calender is displayed
+        //User selects expiry date on the calender date-picker pop-up
+        ExpiryDatePickerField(
+            expiryDate = expiryDateText,
+            onDateSelected = { expiryDateText = it }
+        )
+
+
+
+        Spacer(modifier = Modifier.height(10.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            //Checking inputs for clean data entry into the Database//
+            //TO DO: More validation checks
+            //TO DO: Cancel if user decides to not add anything
+            //TO DO: After cancellation or add ingredient, user is directed to fridge homescreen OR?
+            //Pop up asking if user wants to add more ingredients or not (if we have time)
+            ElevatedButton(
+                onClick = {
+                    if (name.isNotBlank() && quantity.isNotBlank() && unit.isNotBlank() && unitPrice.isNotBlank()) {
+                        val ingredient = Ingredient(
+                            name = name.trim().replaceFirstChar { it.uppercaseChar() },
+                            quantity = quantity.toIntOrNull() ?: 0,
+                            unit = unit.trim(),
+                            unitPrice = unitPrice.toFloatOrNull() ?: 0f,
+
+                            insertDate = Date(),
+                            expiryDate = Date(), //CHANGE THIS AFTER DATE PICKER FUNCTION IS IMPLEMENTED
+                            category = category.trim(), //TO FIX
+                        )
+                        viewModel.insertIngredient(ingredient)
+                        name = ""; quantity = ""; unit = ""; unitPrice = ""; expiryDateText = ""; category = ""
+                        Toast.makeText(context, "Ingredient added!", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(context, "Please fill all fields", Toast.LENGTH_SHORT)
+                            .show()
+                    }
+                },
+                shape = RoundedCornerShape(12.dp)
             ) {
-                //Checking inputs for clean data entry into the Database//
-                //TO DO: More validation checks
-                //TO DO: Cancel if user decides to not add anything
-                //TO DO: After cancellation or add ingredient, user is directed to fridge homescreen OR?
-                //Pop up asking if user wants to add more ingredients or not (if we have time)
-                ElevatedButton(
-                    onClick = {
-                        if (name.isNotBlank() && quantity.isNotBlank() && unit.isNotBlank() && unitPrice.isNotBlank()) {
-                            val ingredient = Ingredient(
-                                name = name.trim().replaceFirstChar { it.uppercaseChar() },
-                                quantity = quantity.toIntOrNull() ?: 0,
-                                unit = unit.trim(),
-                                unitPrice = unitPrice.toFloatOrNull() ?: 0f,
-                                insertDate = Date(),
-                                expiryDate = Date() //CHANGE THIS AFTER DATE PICKER FUNCTION IS IMPLEMENTED
-                            )
-                            viewModel.insertIngredient(ingredient)
-                            name = ""; quantity = ""; unit = ""; unitPrice = ""
-                            Toast.makeText(context, "Ingredient added!", Toast.LENGTH_SHORT).show()
-                        } else {
-                            Toast.makeText(context, "Please fill all fields", Toast.LENGTH_SHORT)
-                                .show()
-                        }
-                    },
-                    shape = RoundedCornerShape(12.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = "Add",
-                        modifier = Modifier.padding(end = 8.dp)
-                    )
-                    Text(text = "Add Ingredient")
-                }
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Add",
+                    modifier = Modifier.padding(end = 8.dp)
+                )
+                Text(text = "Add Ingredient")
+            }
+            Spacer(modifier = Modifier.width(16.dp))
+
+            //This is button for user when they want to cancel adding ingredients
+            //When this is clicked, all fields will be cleared and user will be redirected back to fridge screen
+            //TO DO: navigation
+            ElevatedButton(
+                onClick = {
+                    name = ""; quantity = ""; unit = ""; unitPrice = ""; expiryDateText = ""; category = ""
+                    Toast.makeText(context, "Cancelled! Redirecting to fridge...", Toast.LENGTH_SHORT).show()
+                },
+                shape = RoundedCornerShape(12.dp),
+            ) {
+                Text("Cancel")
             }
         }
+        Spacer(modifier = Modifier.height(40.dp))
     }
+}
 
 //This function is the Screen when user clicks 'Add Ingredients'
 //in the Fridge Screen
 //TO DO: NAV ROUTE IN FRIDGE SCREEN
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddIngredientScreen() {
@@ -250,33 +282,35 @@ fun AddIngredientScreen() {
             )
         }
     ) { innerPadding ->
-        Column(
+        LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(24.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp),
-
-            ) {
-
-            Spacer(modifier = Modifier.height(20.dp))
-
-            val image: Painter = painterResource(R.drawable.grocery)
-            Image(
-                painter = image,
-                contentDescription = "Grocery Image",
-                modifier = Modifier
-                    .size(150.dp)
-                    .align(Alignment.CenterHorizontally)
-            )
-            AddIngredientsToDB(viewModel = viewModel())
+                .padding(horizontal = 24.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            item {
+                Spacer(modifier = Modifier.height(20.dp))
+            }
+            item {
+                val image: Painter = painterResource(R.drawable.grocery)
+                Image(
+                    painter = image,
+                    contentDescription = "Grocery Image",
+                    modifier = Modifier.size(150.dp)
+                )
+            }
+            item {
+                AddIngredientsToDB(viewModel = viewModel())
+            }
         }
+
     }
 }
 
 //This function will have unit as a drop down menu
 //This will be called into the AddIngredientsToDB() function
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UnitDropDown(
@@ -297,16 +331,13 @@ fun UnitDropDown(
             modifier = Modifier
                 .menuAnchor()
                 .fillMaxWidth()
-                .focusProperties { canFocus = false }
-                .clip(RoundedCornerShape(10.dp))
-                .background(Color(0xFFD7DEFB).copy(alpha = 0.2f)),
+                .clip(RoundedCornerShape(10.dp)),
             readOnly = true,
             value = selectedUnit,
             onValueChange = {},
             label = { Text("select unit") },
 
             ////When user clicks on the textfield, it changes colour to indicate click
-            //TO DO: can't get this working for some reason
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = Color(0xFFD7DEFB).copy(alpha = 0.6f),
                 unfocusedContainerColor = Color(0xFFD7DEFB).copy(alpha = 0.2f)
@@ -344,12 +375,13 @@ fun UnitDropDown(
 //Week3 lab content
 //parameter logic similar to UnitDropDown function
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExpiryDatePickerField(
-    expiryDate:String,
+    expiryDate: String,
     onDateSelected: (String) -> Unit
-){
+) {
     val calendar = Calendar.getInstance()
     val formatter = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
 
@@ -358,33 +390,34 @@ fun ExpiryDatePickerField(
     )
 
     var showDatePicker by remember { mutableStateOf(false) }
-    var selectedDate by remember { mutableStateOf(calendar.timeInMillis)}
+    var selectedDate by remember { mutableLongStateOf(calendar.timeInMillis) }
 
     TextField(
         value = expiryDate,
         onValueChange = {},
         readOnly = true,
-        label = { Text("select date")},
+        label = { Text("select date") },
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(10.dp))
-            .clickable { showDatePicker= true },
+            .clickable { showDatePicker = true },
         shape = RoundedCornerShape(10.dp),
         colors = TextFieldDefaults.colors(
             focusedContainerColor = Color(0xFFD7DEFB).copy(alpha = 0.6f),
             unfocusedContainerColor = Color(0xFFD7DEFB).copy(alpha = 0.2f)
         ),
         trailingIcon = {
-            Icon(imageVector = Icons.Default.DateRange,
+            Icon(
+                imageVector = Icons.Default.DateRange,
                 contentDescription = "Select Date",
                 modifier = Modifier
-                    .clickable { showDatePicker= true }
+                    .clickable { showDatePicker = true }
                     .size(24.dp)
             )
         }
     )
 
-    if (showDatePicker){
+    if (showDatePicker) {
         DatePickerDialog(
             onDismissRequest = {
                 showDatePicker = false
@@ -392,7 +425,7 @@ fun ExpiryDatePickerField(
             confirmButton = {
                 TextButton(onClick = {
                     showDatePicker = false
-                    selectedDate = datePickerState.selectedDateMillis?:calendar.timeInMillis
+                    selectedDate = datePickerState.selectedDateMillis ?: calendar.timeInMillis
                     onDateSelected("Expiry: ${formatter.format(Date(selectedDate))}")
                 }) {
                     Text("OK")
@@ -412,7 +445,67 @@ fun ExpiryDatePickerField(
     }
 }
 
+//This function will have category as drop down menu
+//This will be called into the AddIngredientsToDB() function
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CategoryDropDown(
+    selectedCategory: String,
+    onCategorySelected: (String) -> Unit,
+    modifier: Modifier = Modifier
 
+) {
+    val categoryOptions =
+        listOf("Fruit", "Vegetables", "Proteins", "Dairy", "Grains", "Condiments", "Frozen goods")
+    var isExpanded by remember { mutableStateOf(false) }
+
+    ExposedDropdownMenuBox(
+        expanded = isExpanded,
+        onExpandedChange = { isExpanded = it },
+        modifier = modifier
+            .padding(bottom = 8.dp)
+    ) {
+        TextField(
+            modifier = Modifier
+                .menuAnchor()
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(10.dp)),
+            readOnly = true,
+            value = selectedCategory,
+            onValueChange = {},
+            label = { Text("select category") },
+
+            ////When user clicks on the textfield, it changes colour to indicate click
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = Color(0xFFD7DEFB).copy(alpha = 0.6f),
+                unfocusedContainerColor = Color(0xFFD7DEFB).copy(alpha = 0.2f)
+
+            ),
+            //manages the arrow icon up and down
+            trailingIcon = {
+                ExposedDropdownMenuDefaults.TrailingIcon(expanded = isExpanded)
+            },
+            singleLine = true,
+            shape = RoundedCornerShape(10.dp)
+
+        )
+        ExposedDropdownMenu(
+            expanded = isExpanded,
+            onDismissRequest = { isExpanded = false }
+        ) {
+            categoryOptions.forEach { selectedOption ->
+                DropdownMenuItem(
+                    text = { Text(selectedOption) },
+                    onClick = {
+                        onCategorySelected(selectedOption)
+                        isExpanded = false
+                    },
+                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
+                )
+            }
+        }
+    }
+}
 //@Preview(showBackground = true)
 //@Composable
 //fun AddIngredientsPreview() {
@@ -420,4 +513,4 @@ fun ExpiryDatePickerField(
 //}
 //
 
-//test push from MAC
+
