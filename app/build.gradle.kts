@@ -41,6 +41,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.mpandroidchart)
     implementation(libs.androidx.runtime.livedata)
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.runtime)
