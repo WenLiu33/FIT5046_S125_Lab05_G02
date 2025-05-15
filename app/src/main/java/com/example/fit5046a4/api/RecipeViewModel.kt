@@ -1,4 +1,4 @@
-package com.example.fit5046a4
+package com.example.fit5046a4.api
 
 import android.util.Log
 import androidx.lifecycle.LiveData
@@ -27,8 +27,8 @@ class RecipeViewModel : ViewModel() {
                     val categories = response.body()?.categories
 
 
-                    val breakfast = categories?.filter { it.strCategory.contains("Breakfast", ignoreCase = true) ||
-                            it.strCategory.contains("Chicken", ignoreCase = true)||
+                    val breakfast = categories?.filter { it.strCategory.contains("Chicken", ignoreCase = true) ||
+                            it.strCategory.contains("Breakfast", ignoreCase = true)||
                             it.strCategory.contains("Vegetarian", ignoreCase = true)}
                     val lunch = categories?.filter { it.strCategory.contains("Lunch", ignoreCase = true) ||
                             it.strCategory.contains("Lamb", ignoreCase = true) ||

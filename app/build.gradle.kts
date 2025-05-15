@@ -67,6 +67,8 @@ dependencies {
     implementation (libs.retrofit)
     implementation (libs.converter.gson)
     implementation(libs.gson)
+    implementation(libs.coil.compose)
+
 
     // work manager dependency
     implementation(libs.androidx.work.runtime.ktx)

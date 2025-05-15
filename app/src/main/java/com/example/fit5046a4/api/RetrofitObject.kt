@@ -1,4 +1,4 @@
-package com.example.fit5046a4
+package com.example.fit5046a4.api
 
 import android.util.Log
 import retrofit2.Retrofit
