@@ -48,9 +48,7 @@ fun macaroonPastelPalette(): List<Int> {
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
-fun weeklySpendSundayToSaturday(
-    ingredients: List<Ingredient>
-): List<Float> {
+fun weeklySpendSundayToSaturday(ingredients: List<Ingredient>): List<Float> {
     // 1) Anchor to the Sunday of the current week
     val sunday = LocalDate.now()
         .with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY))

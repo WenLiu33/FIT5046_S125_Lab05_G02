@@ -1,6 +1,7 @@
 package com.example.fit5046a4
 
 import BarChartScreen
+import PieChartScreen
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
@@ -194,6 +195,7 @@ fun Report(
             Spacer(modifier = Modifier.height(16.dp))
             TotalFridgeValue()
             Spacer(modifier = Modifier.height(8.dp))
+            PieChartScreen()
             Divider(
                 modifier = Modifier
                     .fillMaxWidth()
