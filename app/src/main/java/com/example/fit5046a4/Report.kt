@@ -1,6 +1,8 @@
 package com.example.fit5046a4
 
 import BarChartScreen
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -154,8 +156,9 @@ fun IngredientsRunningLow(viewModel: IngredientViewModel = viewModel()) {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun BarChartSection(){
+fun BarChartSection(viewModel: IngredientViewModel = viewModel()){
     Column(
         modifier = Modifier
             .height(200.dp)                    // fixed 200 dp high
@@ -163,11 +166,12 @@ fun BarChartSection(){
             .padding(16.dp),                   // inner padding
         verticalArrangement = Arrangement.spacedBy(8.dp)  // 8 dp between children
     ) {
-        BarChartScreen()
+        BarChartScreen(viewModel)
     }
 }
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun Report(
     modifier: Modifier = Modifier
@@ -253,10 +257,10 @@ fun Report(
 }
 
 
-@Preview(showBackground = true)
-@Composable
-fun ReportPreview(){
-    FIT5046A4Theme {
-        Report()
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun ReportPreview(){
+//    FIT5046A4Theme {
+//        Report()
+//    }
+//}
