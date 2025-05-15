@@ -71,6 +71,7 @@ import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.example.fit5046a4.database.Ingredient
 import java.text.SimpleDateFormat
 import java.time.Instant
@@ -256,36 +257,37 @@ fun AddIngredientsToDB(viewModel: IngredientViewModel) {
 }
 
 //This function is the Screen when user clicks 'Add Ingredients'
-//in the Fridge Screen
-//TO DO: NAV ROUTE IN FRIDGE SCREEN
+// It is navigated to from the Fridge screen when the user clicks "Add Ingredient".
+// The navController parameter is passed in to allow navigation actions.
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddIngredientScreen() {
+fun AddIngredientScreen(navController: NavController) {
+    //TEMPORARY COMMENT OUT: currently using BottomNavigationBarAndTopBar scaffold
     //Layout of the screen with grocery image
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(text = "Add Ingredients")
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFFD7DEFB),
-                    titleContentColor = MaterialTheme.colorScheme.primary,
-                )
-            )
-        }
-    ) { innerPadding ->
+//    Scaffold(
+//        topBar = {
+//            TopAppBar(
+//                title = {
+//                    Box(
+//                        modifier = Modifier
+//                            .fillMaxWidth(),
+//                        contentAlignment = Alignment.Center
+//                    ) {
+//                        Text(text = "Add Ingredients")
+//                    }
+//                },
+//                colors = TopAppBarDefaults.topAppBarColors(
+//                    containerColor = Color(0xFFD7DEFB),
+//                    titleContentColor = MaterialTheme.colorScheme.primary,
+//                )
+//            )
+//        }
+//    ) { innerPadding ->
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
+                //.padding(innerPadding)
                 .padding(horizontal = 24.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -307,7 +309,7 @@ fun AddIngredientScreen() {
         }
 
     }
-}
+
 
 //This function will have unit as a drop down menu
 //This will be called into the AddIngredientsToDB() function

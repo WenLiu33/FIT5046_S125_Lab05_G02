@@ -2,7 +2,9 @@ package com.example.fit5046a4
 
 
 import android.app.Application
+import android.os.Build
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -43,9 +45,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 
 
 //This was the UI implementation for Fridge
@@ -135,7 +139,35 @@ fun FridgeItemList(viewModel: IngredientViewModel = viewModel()) {
 
     //If Ingredients isn't empty, it will be displayed in lazy Column
     if (ingredients.isEmpty()) {
-        Text("Your fridge is currently empty! Add Ingredients below")
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp)
+        ) {
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp),
+                shape = RoundedCornerShape(8.dp),
+                tonalElevation = 2.dp,
+                color = Color(0xFFD7DEFB).copy(alpha = 0.2f)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .padding(10.dp),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Your fridge is currently empty! \nAdd ingredients below.",
+                        style = MaterialTheme.typography.bodyLarge,
+                        textAlign = TextAlign.Center,
+                        //color = Color(0xFF888888)
+                        color = Color(0xFF495D92)
+                    )
+                }
+            }
+        }
     } else {
         Box(
             modifier = Modifier
@@ -189,8 +221,9 @@ fun FridgeItemList(viewModel: IngredientViewModel = viewModel()) {
 //This is the Fridge function that lays out the components
 //The first component will be the FridgeItemList
 //The second component will be the AddIngredients Function
+//navController is passed in to allow navigation from inside this screen (e.g., to "add_ingredient")
 @Composable
-fun Fridge() {
+fun Fridge(navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -207,7 +240,14 @@ fun Fridge() {
         Spacer(modifier = Modifier.height(50.dp))
         Text("Here's what you've got right now:", fontSize = 20.sp)
         Spacer(modifier = Modifier.height(30.dp))
+
+        //displays fridge items from database
         FridgeItemList()
+
+        Spacer(modifier = Modifier.height(30.dp))
+
+        //displays button to add ingredients
+        AddIngredientsButton(navController)
     }
 }
 
@@ -217,10 +257,23 @@ fun EditIngredients(){
     Text("TO DO")
 }
 
-//This is the function to AddIngredients
+//This is the function to Add Ingredients
+//Upon clicking this button, user will be navigated to the AddIngredientScreen
 @Composable
-fun AddIngredients(){
-    Text("TO DO")
+fun AddIngredientsButton(navController: NavController){
+    val context = LocalContext.current
+    ElevatedButton(
+        onClick = {
+            navController.navigate("add_ingredient")
+        },
+        shape = RoundedCornerShape(12.dp)
+    ) {
+        Icon(
+            imageVector = Icons.Default.Add,
+            contentDescription = "Add",
+            modifier = Modifier.padding(end = 8.dp)
+        )
+        Text(text="Add Ingredients")
+    }
 }
-
 
