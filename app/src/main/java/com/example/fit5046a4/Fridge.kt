@@ -258,10 +258,7 @@ fun EditIngredientDialog(
     // Selected unit for item
     var selectedUnit by remember { mutableStateOf(ingredient.unit) }
     var isExpanded by remember { mutableStateOf(false) }
-
     val unitOptions = listOf("g", "kg", "ml", "L", "pc(s)", "cup(s)")
-
-    val focusManager = LocalFocusManager.current
 
     //Main layout of dialog
     AlertDialog(
