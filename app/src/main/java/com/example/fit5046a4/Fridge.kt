@@ -393,17 +393,6 @@ fun EditIngredientDialog(
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Button(
-                    onClick = { onRemove(ingredient) },
-                    modifier = Modifier.weight(1f),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFFFF7685),
-                        contentColor = Color.Black
-                    )
-                ) {
-                    Text("Remove", fontSize = 9.sp, color = Color.White)
-                }
-
-                Button(
                     onClick = onDismiss,
                     modifier = Modifier.weight(1f),
                     colors = ButtonDefaults.buttonColors(
@@ -412,6 +401,17 @@ fun EditIngredientDialog(
                     )
                 ) {
                     Text("Cancel", fontSize = 10.sp)
+                }
+
+                Button(
+                    onClick = { onRemove(ingredient) },
+                    modifier = Modifier.weight(1f),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFFFF7685),
+                        contentColor = Color.Black
+                    )
+                ) {
+                    Text("Remove", fontSize = 9.sp, color = Color.White)
                 }
 
                 Button(
