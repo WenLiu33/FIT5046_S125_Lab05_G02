@@ -268,9 +268,10 @@ fun EditIngredientDialog(
             Text(
 
                 //takes name of ingredient instead of just 'edit item' so user knows what they are editing
-                text = "Edit ${ingredient.name}",
+                text = "Update or Remove ${ingredient.name}",
                 style = MaterialTheme.typography.titleMedium,
-                color = Color.White
+                color = Color.Black,
+                modifier = Modifier.padding(bottom=8.dp)
             )
         },
 
