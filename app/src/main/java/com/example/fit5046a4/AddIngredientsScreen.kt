@@ -7,6 +7,7 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -68,9 +69,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.focus.focusProperties
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.example.fit5046a4.database.Ingredient
 import java.text.SimpleDateFormat
 import java.time.Instant
@@ -88,7 +93,7 @@ import java.util.Locale
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddIngredientsToDB(viewModel: IngredientViewModel) {
+fun AddIngredientsToDB(viewModel: IngredientViewModel, navController: NavController) {
     val ingredients by viewModel.allIngredients.collectAsState(initial = emptyList())
     var name by remember { mutableStateOf("") }
     var quantity by remember { mutableStateOf("") }
@@ -98,9 +103,20 @@ fun AddIngredientsToDB(viewModel: IngredientViewModel) {
     //var selectedIngredient by remember { mutableStateOf<Ingredient?>(null) }
     var category by remember { mutableStateOf("") }
     val context = LocalContext.current
+    val focusManager = LocalFocusManager.current
 
-    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-        Text("Ingredient:")
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            // When user taps away from the field, they keyboard disappears unless relevent field is tapped
+            .pointerInput(Unit) {
+                detectTapGestures(onTap = {
+                    focusManager.clearFocus()
+                })
+            },
+        verticalArrangement = Arrangement.spacedBy(10.dp)
+    ){
+        Text("Ingredient:", fontSize = 16.sp, fontWeight = FontWeight.Medium)
         TextField(
             value = name,
             onValueChange = { name = it },
@@ -120,7 +136,7 @@ fun AddIngredientsToDB(viewModel: IngredientViewModel) {
         //Accepts input from a numerical keyboard only
         //To enable on emulator, go to settings, disable stylus input
         //and enable on screen keyboard
-        Text("Quantity & Unit:")
+        Text("Quantity & Unit:",fontSize = 15.sp, fontWeight = FontWeight.Medium)
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -128,7 +144,7 @@ fun AddIngredientsToDB(viewModel: IngredientViewModel) {
             TextField(
                 value = quantity,
                 onValueChange = { quantity = it },
-                placeholder = { Text("select qty") },
+                placeholder = { Text("select qty", fontSize = 14.sp) },
 
                 //numerical keyboarc
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -156,36 +172,40 @@ fun AddIngredientsToDB(viewModel: IngredientViewModel) {
         //Accepts input from a numerical keyboard only
         //To enable on emulator, go to settings, disable stylus input
         //and enable on screen keyboard
-        Text("Unit Price:")
-        TextField(
-            value = unitPrice,
-            onValueChange = { unitPrice = it },
-            placeholder = { Text("e.g. 2.50") },
+        Text("Unit Price & Category:", fontSize = 15.sp, fontWeight = FontWeight.Medium)
+        Row(
+            modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            TextField(
+                value = unitPrice,
+                onValueChange = { unitPrice = it },
+                placeholder = { Text("e.g. 2.50" ,fontSize = 14.sp) },
 
-            //numerical keyboard
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(10.dp)),
-            singleLine = true,
-            shape = RoundedCornerShape(10.dp),
+                //numerical keyboard
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                modifier = Modifier
+                    .weight(1f)
+                    .clip(RoundedCornerShape(10.dp)),
+                singleLine = true,
+                shape = RoundedCornerShape(10.dp),
 
-            // when user clicks on the textfield, it changes colour to indicate click
-            colors = TextFieldDefaults.colors(
-                focusedContainerColor = Color(0xFFD7DEFB).copy(alpha = 0.6f),
-                unfocusedContainerColor = Color(0xFFD7DEFB).copy(alpha = 0.2f)
+                // when user clicks on the textfield, it changes colour to indicate click
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = Color(0xFFD7DEFB).copy(alpha = 0.6f),
+                    unfocusedContainerColor = Color(0xFFD7DEFB).copy(alpha = 0.2f)
 
+                )
             )
-        )
 
-        Text("Category:", modifier = Modifier.padding(top = 12.dp))
+            CategoryDropDown(
+                selectedCategory = category,
+                onCategorySelected = { category = it },
+                modifier = Modifier.weight((1f))
+            )
 
-        CategoryDropDown(
-            selectedCategory = category,
-            onCategorySelected = { category = it }
-        )
+        }
 
-        Text("Expiry Date:", modifier = Modifier.padding(top = 12.dp))
+        Text("Expiry Date:", modifier = Modifier.padding(top = 4.dp), fontSize = 15.sp, fontWeight = FontWeight.Medium)
 
         //ExpiryDatePickerField() is called here so a calender is displayed
         //User selects expiry date on the calender date-picker pop-up
@@ -194,9 +214,7 @@ fun AddIngredientsToDB(viewModel: IngredientViewModel) {
             onDateSelected = { expiryDateText = it }
         )
 
-
-
-        Spacer(modifier = Modifier.height(10.dp))
+        Spacer(modifier = Modifier.height(24.dp))
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center
@@ -244,7 +262,12 @@ fun AddIngredientsToDB(viewModel: IngredientViewModel) {
             ElevatedButton(
                 onClick = {
                     name = ""; quantity = ""; unit = ""; unitPrice = ""; expiryDateText = ""; category = ""
-                    Toast.makeText(context, "Cancelled! Redirecting to fridge...", Toast.LENGTH_SHORT).show()
+                    //navigates user back to fridge screen upon cancellation
+                    navController.navigate("fridge"){
+                        popUpTo("add_ingredient"){
+                            inclusive = true
+                        }
+                    }
                 },
                 shape = RoundedCornerShape(12.dp),
             ) {
@@ -256,36 +279,37 @@ fun AddIngredientsToDB(viewModel: IngredientViewModel) {
 }
 
 //This function is the Screen when user clicks 'Add Ingredients'
-//in the Fridge Screen
-//TO DO: NAV ROUTE IN FRIDGE SCREEN
+// It is navigated to from the Fridge screen when the user clicks "Add Ingredient".
+// The navController parameter is passed in to allow navigation actions.
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddIngredientScreen() {
+fun AddIngredientScreen(navController: NavController) {
+    //TEMPORARY COMMENT OUT: currently using BottomNavigationBarAndTopBar scaffold
     //Layout of the screen with grocery image
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(text = "Add Ingredients")
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFFD7DEFB),
-                    titleContentColor = MaterialTheme.colorScheme.primary,
-                )
-            )
-        }
-    ) { innerPadding ->
+//    Scaffold(
+//        topBar = {
+//            TopAppBar(
+//                title = {
+//                    Box(
+//                        modifier = Modifier
+//                            .fillMaxWidth(),
+//                        contentAlignment = Alignment.Center
+//                    ) {
+//                        Text(text = "Add Ingredients")
+//                    }
+//                },
+//                colors = TopAppBarDefaults.topAppBarColors(
+//                    containerColor = Color(0xFFD7DEFB),
+//                    titleContentColor = MaterialTheme.colorScheme.primary,
+//                )
+//            )
+//        }
+//    ) { innerPadding ->
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
+                //.padding(innerPadding)
                 .padding(horizontal = 24.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -302,12 +326,11 @@ fun AddIngredientScreen() {
                 )
             }
             item {
-                AddIngredientsToDB(viewModel = viewModel())
+                AddIngredientsToDB(viewModel = viewModel(), navController = navController)
             }
         }
 
     }
-}
 
 //This function will have unit as a drop down menu
 //This will be called into the AddIngredientsToDB() function
@@ -335,7 +358,7 @@ fun UnitDropDown(
             readOnly = true,
             value = selectedUnit,
             onValueChange = {},
-            label = { Text("select unit") },
+            label = { Text("select unit", fontSize = 14.sp) },
 
             ////When user clicks on the textfield, it changes colour to indicate click
             colors = TextFieldDefaults.colors(
@@ -374,7 +397,6 @@ fun UnitDropDown(
 //This will be called into the AddIngredientsToDB() function
 //Week3 lab content
 //parameter logic similar to UnitDropDown function
-
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -396,7 +418,7 @@ fun ExpiryDatePickerField(
         value = expiryDate,
         onValueChange = {},
         readOnly = true,
-        label = { Text("select date") },
+        label = { Text("select date", fontSize = 14.sp) },
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(10.dp))
@@ -473,7 +495,7 @@ fun CategoryDropDown(
             readOnly = true,
             value = selectedCategory,
             onValueChange = {},
-            label = { Text("select category") },
+            label = { Text("select category", fontSize = 14.sp) },
 
             ////When user clicks on the textfield, it changes colour to indicate click
             colors = TextFieldDefaults.colors(
@@ -512,5 +534,3 @@ fun CategoryDropDown(
 //    AddIngredientScreen()
 //}
 //
-
-
