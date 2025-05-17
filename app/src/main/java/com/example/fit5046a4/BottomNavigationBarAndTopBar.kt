@@ -52,7 +52,7 @@ fun BottomNavigationBarAndTopBar() {
                             "fridge" -> "My Fridge"
                             "cook" -> "Cook a Meal"
                             "report" -> "Report"
-                            "add_ingredient" -> "Add Ingredients"
+                            "add_ingredient" -> "Add Items"
                             else -> ""
                         },
                         style = MaterialTheme.typography.titleLarge

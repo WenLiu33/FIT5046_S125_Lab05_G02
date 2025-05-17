@@ -116,7 +116,7 @@ fun AddIngredientsToDB(viewModel: IngredientViewModel, navController: NavControl
             },
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ){
-        Text("Ingredient:", fontSize = 16.sp, fontWeight = FontWeight.Medium)
+        Text("Item:", fontSize = 16.sp, fontWeight = FontWeight.Medium)
         TextField(
             value = name,
             onValueChange = { name = it },
@@ -172,7 +172,7 @@ fun AddIngredientsToDB(viewModel: IngredientViewModel, navController: NavControl
         //Accepts input from a numerical keyboard only
         //To enable on emulator, go to settings, disable stylus input
         //and enable on screen keyboard
-        Text("Unit Price & Category:", fontSize = 15.sp, fontWeight = FontWeight.Medium)
+        Text("Item Price & Category:", fontSize = 15.sp, fontWeight = FontWeight.Medium)
         Row(
             modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
@@ -239,7 +239,7 @@ fun AddIngredientsToDB(viewModel: IngredientViewModel, navController: NavControl
                         )
                         viewModel.insertIngredient(ingredient)
                         name = ""; quantity = ""; unit = ""; unitPrice = ""; expiryDateText = ""; category = ""
-                        Toast.makeText(context, "Ingredient added!", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Item added!", Toast.LENGTH_SHORT).show()
                     } else {
                         Toast.makeText(context, "Please fill all fields", Toast.LENGTH_SHORT)
                             .show()
@@ -252,7 +252,7 @@ fun AddIngredientsToDB(viewModel: IngredientViewModel, navController: NavControl
                     contentDescription = "Add",
                     modifier = Modifier.padding(end = 8.dp)
                 )
-                Text(text = "Add Ingredient")
+                Text(text = "Add Item")
             }
             Spacer(modifier = Modifier.width(16.dp))
 
