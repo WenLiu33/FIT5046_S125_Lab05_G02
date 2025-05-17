@@ -98,5 +98,42 @@ val ingredients = listOf(
         insertDate = dateFormat.parse("2025-05-06")!!,
         expiryDate = dateFormat.parse("2025-05-08")!!,
         category   = "Bakery"
+    ),
+    Ingredient(
+        name       = "Bread1",
+        quantity   = 10,
+        unit       = "loaf",
+        unitPrice  = 2.50f,
+        insertDate = dateFormat.parse("2025-05-15")!!,
+        expiryDate = dateFormat.parse("2025-05-16")!!,
+        category   = "Bakery"
+    ),
+    Ingredient(
+        name       = "Bread2",
+        quantity   = 20,
+        unit       = "loaf",
+        unitPrice  = 2.50f,
+        insertDate = dateFormat.parse("2025-05-14")!!,
+        expiryDate = dateFormat.parse("2025-05-18")!!,
+        category   = "Diary"
+    ),
+    Ingredient(
+        name       = "Bread3",
+        quantity   = 50,
+        unit       = "loaf",
+        unitPrice  = 2.50f,
+        insertDate = dateFormat.parse("2025-05-11")!!,
+        expiryDate = dateFormat.parse("2025-05-18")!!,
+        category   = "Cafe"
+    ),
+    Ingredient(
+        name       = "Bread4",
+        quantity   = 40,
+        unit       = "loaf",
+        unitPrice  = 2.50f,
+        insertDate = dateFormat.parse("2025-05-12")!!,
+        expiryDate = dateFormat.parse("2025-05-20")!!,
+        category   = "Americano"
     )
+
 )
