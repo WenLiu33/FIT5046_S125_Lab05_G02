@@ -7,6 +7,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.White
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -56,13 +59,23 @@ fun categorySpendThisWeek(ingredients: List<Ingredient>): List<PieEntry> {
 }
 
 fun categoryFridgeValue (ingredients: List<Ingredient>): List<PieEntry>{
-    val sumByCategory:Map<String, Float> = ingredients.groupBy { it.category }
-        .mapValues { (_, group) ->
-            group.sumOf { it.quantity * it.unitPrice.toDouble() }.toFloat()
+    val sums = ingredients.groupBy { it.category }.mapValues { (_, group) ->
+        group.sumOf{it.quantity* it.unitPrice.toDouble()}.toFloat() }
+    val fridgeTotal = sums.values.sum()
+
+    val (major, minor) = sums.entries.partition { it.value / fridgeTotal >=0.05f }
+
+    val entries = mutableListOf<PieEntry>().apply {
+        major.forEach{ (cat, total) ->
+            add(PieEntry(total, cat))
         }
-    return sumByCategory.map { (category, total) ->
-        PieEntry(total, category)
+        val otherTotal = minor.sumOf{ it.value.toDouble()}.toFloat()
+        if (otherTotal>0f){
+            add(PieEntry(otherTotal, "Others"))
+        }
     }
+
+    return entries
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -78,9 +91,12 @@ fun PieChartScreen(viewModel: IngredientViewModel = viewModel()) {
     }
 
     // 3) Build the chart just as you did before
-    val pieDataSet = PieDataSet(pieEntries, "Weekly by Category").apply {
+    val pieDataSet = PieDataSet(pieEntries, "").apply {
         colors = macaroonPastelPalette()
         valueTextSize = 14f
+        xValuePosition = PieDataSet.ValuePosition.INSIDE_SLICE
+        yValuePosition = PieDataSet.ValuePosition.INSIDE_SLICE
+        valueTextColor = Color.White.toArgb()
         setDrawValues(true)
         sliceSpace = 2f
 //        valueFormatter = PercentValueFormatter() // if you like %
@@ -95,8 +111,8 @@ fun PieChartScreen(viewModel: IngredientViewModel = viewModel()) {
             PieChart(ctx).apply {
                 data = pieData
                 description.isEnabled = false
-                centerText = "This Week"
-                setUsePercentValues(false)  // or true if you used PercentValueFormatter
+                centerText = "Fridge"
+                setUsePercentValues(true)  // or true if you used PercentValueFormatter
                 setDrawEntryLabels(true)
                 animateY(800)
             }
