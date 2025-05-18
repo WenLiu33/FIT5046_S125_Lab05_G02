@@ -1,4 +1,4 @@
-package com.example.fit5046a4
+package com.example.fit5046a4.api
 
 import android.util.Log
 import androidx.lifecycle.LiveData
@@ -7,14 +7,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 
-
-
-
 class RecipeViewModel : ViewModel() {
+    // private mutable livedata to store each list
     private val _breakfastCategories = MutableLiveData<List<Category>>()
     private val _lunchCategories = MutableLiveData<List<Category>>()
     private val _dinnerCategories = MutableLiveData<List<Category>>()
 
+    //public immutable livedata for UI to observe
     val breakfastCategory: LiveData<List<Category>> get() = _breakfastCategories
     val lunchCategory: LiveData<List<Category>> get() = _lunchCategories
     val dinnerCategory: LiveData<List<Category>> get() = _dinnerCategories
@@ -27,8 +26,9 @@ class RecipeViewModel : ViewModel() {
                     val categories = response.body()?.categories
 
 
-                    val breakfast = categories?.filter { it.strCategory.contains("Breakfast", ignoreCase = true) ||
-                            it.strCategory.contains("Chicken", ignoreCase = true)||
+                    //filter based on keywords for each meal type
+                    val breakfast = categories?.filter { it.strCategory.contains("Chicken", ignoreCase = true) ||
+                            it.strCategory.contains("Breakfast", ignoreCase = true)||
                             it.strCategory.contains("Vegetarian", ignoreCase = true)}
                     val lunch = categories?.filter { it.strCategory.contains("Lunch", ignoreCase = true) ||
                             it.strCategory.contains("Lamb", ignoreCase = true) ||
@@ -37,6 +37,7 @@ class RecipeViewModel : ViewModel() {
                             it.strCategory.contains("Pasta", ignoreCase = true)||
                             it.strCategory.contains("Seafood", ignoreCase = true)}
 
+                    // Post filtered results to LiveData
                     _breakfastCategories.value = breakfast ?: emptyList()
                     _lunchCategories.value = lunch ?: emptyList()
                     _dinnerCategories.value = dinner ?: emptyList()

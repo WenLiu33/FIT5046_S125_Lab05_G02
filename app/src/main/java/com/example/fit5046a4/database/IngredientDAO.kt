@@ -27,4 +27,7 @@ interface IngredientDAO {
     @Query("SELECT name, AVG(expiryDate - insertDate) AS averageLife FROM Ingredient Group by name" )
     fun averageIngredientLife():Flow<List<IngredientLife>>
 
+    @Query("SELECT * FROM ingredient")
+    suspend fun getAllIngredientsOnce(): List<Ingredient>
+
 }
