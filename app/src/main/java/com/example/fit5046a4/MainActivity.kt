@@ -37,13 +37,22 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-//@Composable
-//fun Greeting(name: String, modifier: Modifier = Modifier) {
-//    Text(
-//        text = "Hello $name!",
-//        modifier = modifier
-//    )
-//}
+@Composable
+private fun AppRoot() {
+    val navController = rememberNavController()
+    NavHost(
+        navController = navController,
+        startDestination = "LoginDestination"
+    ) {
+        composable("LoginDestination") {
+            LoginScreen(
+                onNavigateToMain = {},
+                onNavigateToRegister = {}
+            )
+        }
+    }
+}
+
 
 @Preview(showBackground = true)
 @Composable

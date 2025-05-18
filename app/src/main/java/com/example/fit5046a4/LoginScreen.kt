@@ -50,7 +50,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun LoginScreen() {
+fun LoginScreen(
+    onNavigateToMain: () -> Unit,
+    onNavigateToRegister: () -> Unit
+) {
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -172,7 +175,10 @@ fun LoginScreen() {
 
             // Login Button
             FilledTonalButton(
-                onClick = { Log.i("Credential", "Email: $email, Password: $password")},
+                onClick = {
+                    Log.i("Credential", "Email: $email, Password: $password")
+                    onNavigateToMain
+                          },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),
@@ -197,7 +203,7 @@ fun LoginScreen() {
 
 
             TextButton(
-                onClick = { /* Navigate to registration screen */ },
+                onClick = { onNavigateToRegister },
                 modifier = Modifier.padding(top = 16.dp)
             ) {
                 Text(
@@ -270,4 +276,10 @@ fun LoginGoogle() {
             }
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun LoginPreview() {
+    LoginScreen()
 }

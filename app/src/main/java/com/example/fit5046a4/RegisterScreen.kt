@@ -50,7 +50,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun RegisterScreen() {
+fun RegisterScreen(
+    onNavigateToMain: () -> Unit,
+    onNavigateToLogin: () -> Unit
+) {
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -206,7 +209,7 @@ fun RegisterScreen() {
 
             // Register Button
             FilledTonalButton(
-                onClick = {},
+                onClick = { onNavigateToMain },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),
@@ -231,7 +234,7 @@ fun RegisterScreen() {
 
 
             TextButton(
-                onClick = { /* Navigate to registration screen */ },
+                onClick = { onNavigateToLogin },
                 modifier = Modifier.padding(top = 16.dp)
             ) {
                 Text(
