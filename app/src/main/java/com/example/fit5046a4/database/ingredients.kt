@@ -131,7 +131,7 @@ val ingredients = listOf(
         quantity   = 40,
         unit       = "loaf",
         unitPrice  = 2.50f,
-        insertDate = dateFormat.parse("2025-05-12")!!,
+        insertDate = dateFormat.parse("2025-05-18")!!,
         expiryDate = dateFormat.parse("2025-05-20")!!,
         category   = "Americano"
     )

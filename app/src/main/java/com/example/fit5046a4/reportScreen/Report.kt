@@ -1,18 +1,15 @@
-package com.example.fit5046a4
+package com.example.fit5046a4.reportScreen
 
 import BarChartScreen
 import PieChartScreen
-import android.graphics.drawable.Icon
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -24,22 +21,17 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Divider
 import androidx.compose.material.Scaffold
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.material3.*
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -50,11 +42,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.fit5046a4.ui.theme.FIT5046A4Theme
+import com.example.fit5046a4.IngredientViewModel
 import monthFormatter
 
 @Composable
@@ -98,22 +87,36 @@ fun CollapsibleSection(
 }
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun TotalFridgeValue(viewModel: IngredientViewModel = viewModel()){
     val ingredients by viewModel.allIngredients.collectAsState(initial = emptyList())
 
     var totalValue = 0f
     if(ingredients.isEmpty()){
-        Text("Your fridge is empty")
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                "Your fridge is empty!",
+                style = MaterialTheme.typography.bodyLarge,
+                textAlign = TextAlign.Center
+            )
+        }
     }else{
         ingredients.forEach{ ingredient ->
             totalValue += ingredient.unitPrice * ingredient.quantity
         }
+        Text(
+            text = "💰 Total value: \$${"%.2f".format(totalValue)}",
+            style = MaterialTheme.typography.bodyLarge
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        PieChartScreen()
     }
-    Text(
-        text = "💰 Total value: \$${"%.2f".format(totalValue)}",
-        style = MaterialTheme.typography.bodyLarge
-    )
 }
 
 @Composable
@@ -243,96 +246,29 @@ fun Report(
                 .padding(innerPadding)  // push content above the bar
                 .padding(horizontal = 16.dp)
                 .verticalScroll(rememberScrollState()),
-//                .fillMaxSize(),
             verticalArrangement = Arrangement.SpaceBetween
         ) {
+            Spacer(modifier = Modifier.height(32.dp))
+            Text("Value of the fridge",
+                color = MaterialTheme.colorScheme.primaryContainer,
+                style    = MaterialTheme.typography.titleLarge )
             Spacer(modifier = Modifier.height(16.dp))
-            CollapsibleSection(title = "Value of the fridge") {
-                TotalFridgeValue()
-                PieChartScreen()
-            }
+//            CollapsibleSection(title = "Value of the fridge") {
+//            }
+            TotalFridgeValue()
             Spacer(modifier = Modifier.height(16.dp))
             CollapsibleSection(title = "Ingredients Expiring in 5 days") {
                 ExpiringIngredientsList()
-            }
-            Spacer(modifier = Modifier.height(16.dp))
-            CollapsibleSection(title = "Ingredients Expiring in 5 days") {
-                ExpiringIngredientsList()
-            }
-            Spacer(modifier = Modifier.height(16.dp))
-            CollapsibleSection(title = "Money Spent on Grocery This Week") {
-                BarChartSection()
             }
             Spacer(modifier = Modifier.height(16.dp))
             CollapsibleSection(title = "Ingredients running low") {
                 IngredientsRunningLow()
             }
             Spacer(modifier = Modifier.height(16.dp))
-//            Text("Value of the fridge",
-//                color = MaterialTheme.colorScheme.primaryContainer,
-//                style    = MaterialTheme.typography.titleLarge )
-//            Spacer(modifier = Modifier.height(16.dp))
-//            TotalFridgeValue()
-//            Spacer(modifier = Modifier.height(8.dp))
-//            PieChartScreen()
-//            Divider(
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .padding(vertical = 8.dp),
-//                color     = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
-//                thickness = 2.dp
-//            )
-
-//            Text("Ingredients Expiring in 5 days",
-//                color = MaterialTheme.colorScheme.primaryContainer,
-//                style    = MaterialTheme.typography.titleLarge)
-//            Spacer(modifier = Modifier.height(16.dp))
-//            ExpiringIngredientsList()
-//            Spacer(modifier = Modifier.height(8.dp))
-//            Divider(
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .padding(vertical = 8.dp),
-//                color     = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
-//                thickness = 2.dp
-//            )
-
-//            Text("Money Spent on Grocery This Week",
-//                color = MaterialTheme.colorScheme.primaryContainer,
-//                style    = MaterialTheme.typography.titleLarge)
-//            Spacer(modifier = Modifier.height(16.dp))
-//
-//            BarChartSection()
-//            Spacer(modifier = Modifier.height(8.dp))
-//            Divider(
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .padding(vertical = 8.dp),
-//                color     = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
-//                thickness = 2.dp
-//            )
-
-//            Spacer(modifier = Modifier.height(16.dp))
-//            Divider(
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .padding(vertical = 8.dp),
-//                color     = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
-//                thickness = 2.dp
-//            )
-//            Text("Ingredients running low",
-//                color = MaterialTheme.colorScheme.primaryContainer,
-//                style    = MaterialTheme.typography.titleLarge)
-//            Spacer(modifier = Modifier.height(16.dp))
-//            IngredientsRunningLow()
-//            Spacer(modifier = Modifier.height(8.dp))
-//            Divider(
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .padding(vertical = 8.dp),
-//                color     = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
-//                thickness = 2.dp
-//            )
+            CollapsibleSection(title = "Money Spent on Grocery This Week") {
+                BarChartSection()
+            }
+            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }
