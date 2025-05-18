@@ -67,6 +67,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.input.pointer.pointerInput
@@ -94,14 +95,18 @@ import java.util.Locale
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddIngredientsToDB(viewModel: IngredientViewModel, navController: NavController) {
-    val ingredients by viewModel.allIngredients.collectAsState(initial = emptyList())
-    var name by remember { mutableStateOf("") }
-    var quantity by remember { mutableStateOf("") }
-    var unit by remember { mutableStateOf("") }
-    var unitPrice by remember { mutableStateOf("") }
-    var expiryDateText by remember { mutableStateOf("") }
-    //var selectedIngredient by remember { mutableStateOf<Ingredient?>(null) }
-    var category by remember { mutableStateOf("") }
+    //val ingredients by viewModel.allIngredients.collectAsState(initial = emptyList())
+    //rememberSaveable so even if user accidentally taps into another screen the inputs are still there
+
+    var name by rememberSaveable { mutableStateOf("") }
+    var quantity by rememberSaveable { mutableStateOf("") }
+    var unit by rememberSaveable { mutableStateOf("") }
+    var unitPrice by rememberSaveable { mutableStateOf("") }
+    var expiryDateText by rememberSaveable { mutableStateOf("") }
+    var expiryDate by rememberSaveable { mutableStateOf(Date())}
+    val formatter = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
+
+    var category by rememberSaveable { mutableStateOf("") }
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
 
@@ -211,7 +216,11 @@ fun AddIngredientsToDB(viewModel: IngredientViewModel, navController: NavControl
         //User selects expiry date on the calender date-picker pop-up
         ExpiryDatePickerField(
             expiryDate = expiryDateText,
-            onDateSelected = { expiryDateText = it }
+            onDateSelected = {
+                expiryDateText = it
+                expiryDate = formatter.parse(it.removePrefix("Expiry: ")) ?: Date()
+
+            }
         )
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -224,26 +233,82 @@ fun AddIngredientsToDB(viewModel: IngredientViewModel, navController: NavControl
             //TO DO: Cancel if user decides to not add anything
             //TO DO: After cancellation or add ingredient, user is directed to fridge homescreen OR?
             //Pop up asking if user wants to add more ingredients or not (if we have time)
+//            ElevatedButton(
+//                onClick = {
+//                    if (name.isNotBlank() && quantity.isNotBlank() && unit.isNotBlank() && unitPrice.isNotBlank()) {
+//                        val ingredient = Ingredient(
+//                            name = name.trim().replaceFirstChar { it.uppercaseChar() },
+//                            quantity = quantity.toIntOrNull() ?: 0,
+//                            unit = unit.trim(),
+//                            unitPrice = if (quantity.toFloatOrNull() != null && quantity.toFloatOrNull() != 0f) {
+//                                (unitPrice.toFloatOrNull() ?: 0f) / quantity.toFloatOrNull()!!
+//                            } else 0f,
+//                            insertDate = Date(),
+//                            expiryDate = expiryDate,
+//                            category = category
+//                        )
+//                        viewModel.insertIngredient(ingredient)
+//                        name = ""; quantity = ""; unit = ""; unitPrice = ""; expiryDateText = ""; category = ""
+//                        Toast.makeText(context, "Item added!", Toast.LENGTH_SHORT).show()
+//                    } else {
+//                        Toast.makeText(context, "Please fill all fields", Toast.LENGTH_SHORT)
+//                            .show()
+//                    }
+//                },
+//                shape = RoundedCornerShape(12.dp)
+//            ) {
+//                Icon(
+//                    imageVector = Icons.Default.Add,
+//                    contentDescription = "Add",
+//                    modifier = Modifier.padding(end = 8.dp)
+//                )
+//                Text(text = "Add Item")
+//            }
+
             ElevatedButton(
                 onClick = {
-                    if (name.isNotBlank() && quantity.isNotBlank() && unit.isNotBlank() && unitPrice.isNotBlank()) {
-                        val ingredient = Ingredient(
-                            name = name.trim().replaceFirstChar { it.uppercaseChar() },
-                            quantity = quantity.toIntOrNull() ?: 0,
-                            unit = unit.trim(),
-                            unitPrice = unitPrice.toFloatOrNull() ?: 0f,
 
-                            insertDate = Date(),
-                            expiryDate = Date(), //CHANGE THIS AFTER DATE PICKER FUNCTION IS IMPLEMENTED
-                            category = category.trim(), //TO FIX
-                        )
-                        viewModel.insertIngredient(ingredient)
-                        name = ""; quantity = ""; unit = ""; unitPrice = ""; expiryDateText = ""; category = ""
-                        Toast.makeText(context, "Item added!", Toast.LENGTH_SHORT).show()
-                    } else {
-                        Toast.makeText(context, "Please fill all fields", Toast.LENGTH_SHORT)
-                            .show()
+                    if (name.isBlank() || quantity.isBlank() || unitPrice.isBlank() || expiryDateText.isBlank() || category.isBlank()) {
+                        Toast.makeText(context, "Plese fill all fields", Toast.LENGTH_SHORT).show()
+                        return@ElevatedButton
                     }
+
+                    if (quantity.toIntOrNull() == null || quantity.toInt() <= 0) {
+                        Toast.makeText(
+                            context,
+                            "Please enter a valid quantity > 0.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        return@ElevatedButton
+                    }
+
+                    if (unitPrice.toFloatOrNull() == null || unitPrice.toFloat() < 0f) {
+                        Toast.makeText(context, "Please enter a valid price", Toast.LENGTH_SHORT)
+                            .show()
+                        return@ElevatedButton
+                    }
+
+                    if (expiryDate.before(Date())) {
+                        Toast.makeText(
+                            context,
+                            "Note: this item is already expired",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+
+                    val ingredient = Ingredient(
+                        name = name.trim().replaceFirstChar { it.uppercaseChar() },
+                        quantity = quantity.toInt(),
+                        unit = unit,
+                        unitPrice = unitPrice.toFloat() / quantity.toInt(),
+                        insertDate = Date(),
+                        expiryDate = expiryDate,
+                        category = category
+                    )
+                    viewModel.insertIngredient(ingredient)
+                    name = ""; quantity = ""; unit = ""; unitPrice = ""; expiryDateText =
+                    ""; category = ""
+                    Toast.makeText(context, "Item added!", Toast.LENGTH_SHORT).show()
                 },
                 shape = RoundedCornerShape(12.dp)
             ) {
@@ -254,6 +319,7 @@ fun AddIngredientsToDB(viewModel: IngredientViewModel, navController: NavControl
                 )
                 Text(text = "Add Item")
             }
+
             Spacer(modifier = Modifier.width(16.dp))
 
             //This is button for user when they want to cancel adding ingredients
@@ -276,6 +342,7 @@ fun AddIngredientsToDB(viewModel: IngredientViewModel, navController: NavControl
         }
         Spacer(modifier = Modifier.height(40.dp))
     }
+
 }
 
 //This function is the Screen when user clicks 'Add Ingredients'

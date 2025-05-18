@@ -407,7 +407,7 @@ fun EditIngredientDialog(
                     onClick = { onRemove(ingredient) },
                     modifier = Modifier.weight(1f),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFFFF7685),
+                        containerColor = Color(0xFFFFA3AB),
                         contentColor = Color.Black
                     )
                 ) {
