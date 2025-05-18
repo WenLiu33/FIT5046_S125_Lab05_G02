@@ -125,6 +125,7 @@ fun TotalFridgeValue(viewModel: IngredientViewModel = viewModel()){
             text = "💰 Total value: \$${"%.2f".format(totalValue)}",
             style = MaterialTheme.typography.bodyLarge
         )
+        Spacer(modifier = Modifier.height(16.dp))
         PieChartScreen()
     }
 }
@@ -258,10 +259,14 @@ fun Report(
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.SpaceBetween
         ) {
+            Spacer(modifier = Modifier.height(32.dp))
+            Text("Value of the fridge",
+                color = MaterialTheme.colorScheme.primaryContainer,
+                style    = MaterialTheme.typography.titleLarge )
             Spacer(modifier = Modifier.height(16.dp))
-            CollapsibleSection(title = "Value of the fridge") {
-                TotalFridgeValue()
-            }
+//            CollapsibleSection(title = "Value of the fridge") {
+//            }
+            TotalFridgeValue()
             Spacer(modifier = Modifier.height(16.dp))
             CollapsibleSection(title = "Ingredients Expiring in 5 days") {
                 ExpiringIngredientsList()
