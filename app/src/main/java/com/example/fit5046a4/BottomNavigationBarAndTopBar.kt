@@ -1,5 +1,7 @@
 package com.example.fit5046a4
 //noinspection UsingMaterialAndMaterial3Libraries
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.BottomNavigation
 //noinspection UsingMaterialAndMaterial3Libraries
@@ -23,6 +25,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)
 @Composable
@@ -49,6 +52,7 @@ fun BottomNavigationBarAndTopBar() {
                             "fridge" -> "My Fridge"
                             "cook" -> "Cook a Meal"
                             "report" -> "Report"
+                            "add_ingredient" -> "Add Ingredients"
                             else -> ""
                         },
                         style = MaterialTheme.typography.titleLarge
@@ -100,8 +104,16 @@ fun BottomNavigationBarAndTopBar() {
         ) {
             composable("home") { Home() }
             composable("cook") { Cook() }
-            composable("fridge") { Fridge() }
+            //Fridge screen receives navController to allow for internal in-screen navigation.
+            //Specifically, the "Add Ingredient" button inside the Fridge screen uses it to navigate to the Add Ingredient screen.
+            composable("fridge") { Fridge(navController) }
             composable("report") { Report() }
+
+            composable("add_ingredient") {
+                //This route handles navigation to the Add Ingredient screen.
+                //It is not part of the bottom navigation bar used for internal flow only, triggered from the Fridge screen.
+                AddIngredientScreen(navController)
+            }
         }
     }
 }

@@ -1,5 +1,9 @@
 package com.example.fit5046a4
 
+import BarChartScreen
+import PieChartScreen
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,6 +19,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
 import androidx.compose.material.Scaffold
 import androidx.compose.material3.MaterialTheme
@@ -151,27 +157,22 @@ fun IngredientsRunningLow(viewModel: IngredientViewModel = viewModel()) {
     }
 }
 
-
-
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun LineChart() {
-    Box(
+fun BarChartSection(viewModel: IngredientViewModel = viewModel()){
+    Column(
         modifier = Modifier
+            .height(200.dp)                    // fixed 200 dp high
             .fillMaxWidth()
-            .height(250.dp)
-            .background(color = Color(0xFF633B48)),
-        contentAlignment = Alignment.Center
+            .padding(16.dp),                   // inner padding
+        verticalArrangement = Arrangement.spacedBy(8.dp)  // 8 dp between children
     ) {
-//        Image(
-//            painter = painterResource(id = R.drawable.linechart),
-//            contentDescription = "Fridge Image",
-//            contentScale = ContentScale.Crop,
-//            modifier = Modifier.fillMaxSize()
-//        )
+        BarChartScreen(viewModel)
     }
 }
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun Report(
     modifier: Modifier = Modifier
@@ -182,16 +183,19 @@ fun Report(
         Column(
             modifier = Modifier
                 .padding(innerPadding)  // push content above the bar
-                .padding(horizontal = 16.dp, vertical = 24.dp)
-                .fillMaxSize(),
+                .padding(horizontal = 16.dp)
+                .verticalScroll(rememberScrollState()),
+//                .fillMaxSize(),
             verticalArrangement = Arrangement.SpaceBetween
         ) {
+            Spacer(modifier = Modifier.height(16.dp))
             Text("Value of the fridge",
                 color = MaterialTheme.colorScheme.primaryContainer,
                 style    = MaterialTheme.typography.titleLarge )
             Spacer(modifier = Modifier.height(16.dp))
             TotalFridgeValue()
             Spacer(modifier = Modifier.height(8.dp))
+            PieChartScreen()
             Divider(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -218,6 +222,9 @@ fun Report(
                 color = MaterialTheme.colorScheme.primaryContainer,
                 style    = MaterialTheme.typography.titleLarge)
             Spacer(modifier = Modifier.height(16.dp))
+
+            BarChartSection()
+            Spacer(modifier = Modifier.height(8.dp))
             Divider(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -225,10 +232,15 @@ fun Report(
                 color     = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
                 thickness = 2.dp
             )
-            Spacer(modifier = Modifier.height(8.dp))
-            // LineChart()
 
-//            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(16.dp))
+            Divider(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
+                color     = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
+                thickness = 2.dp
+            )
             Text("Ingredients running low",
                 color = MaterialTheme.colorScheme.primaryContainer,
                 style    = MaterialTheme.typography.titleLarge)
@@ -247,10 +259,10 @@ fun Report(
 }
 
 
-@Preview(showBackground = true)
-@Composable
-fun ReportPreview(){
-    FIT5046A4Theme {
-        Report()
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun ReportPreview(){
+//    FIT5046A4Theme {
+//        Report()
+//    }
+//}
