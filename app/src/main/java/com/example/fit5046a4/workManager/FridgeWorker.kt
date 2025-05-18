@@ -32,8 +32,8 @@ class FridgeWorker (
         val db = IngredientDatabase.getDatabase(context)
         val ingredients: List<Ingredient> = db.ingredientDAO().getAllIngredientsOnce()
 
-        // filter ingredients expiring less than 3 days
-        val itemExpiringSoon = ingredients.filter { it.isExpiringSoon(3) }
+        // filter ingredients expiring less than 5 days
+        val itemExpiringSoon = ingredients.filter { it.isExpiringSoon(5) }
 
         // push a notification if any item going to expire
         if (itemExpiringSoon.isNotEmpty()) {
@@ -47,17 +47,18 @@ class FridgeWorker (
     }
 
     private fun sendNotification(items: List<Ingredient>): Result {
-        // if Android 13+, check permission first
+        //  if Android 13+, check for POST_NOTIFICATIONS permission
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
             ContextCompat.checkSelfPermission(
                 context,
                 android.Manifest.permission.POST_NOTIFICATIONS
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            // Permission not granted, skip
+            // if Permission not granted, skip
             return Result.success()
         }
 
+        // use a comma separated list of item
         val itemName = items.joinToString(", ") { it.name }
 
         // create channel (Android 8+)
@@ -76,7 +77,7 @@ class FridgeWorker (
             .setSmallIcon(R.drawable.expiry_date)
             .setContentTitle("Items Expiry Alert")
             .setContentText("Items expiring soon: $itemName")
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT) // normal important
             .build()
 
         NotificationManagerCompat.from(context).notify(100, notification)

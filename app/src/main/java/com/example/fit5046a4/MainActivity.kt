@@ -55,8 +55,8 @@ class MainActivity : ComponentActivity() {
         scheduleFridgeWorker(this)
 
         //  TEST: Run OneTime request immediately for testing
-        val testRequest = OneTimeWorkRequestBuilder<FridgeWorker>().build()
-        WorkManager.getInstance(this).enqueue(testRequest)
+//        val testRequest = OneTimeWorkRequestBuilder<FridgeWorker>().build()
+//        WorkManager.getInstance(this).enqueue(testRequest)
 
 
         enableEdgeToEdge()
