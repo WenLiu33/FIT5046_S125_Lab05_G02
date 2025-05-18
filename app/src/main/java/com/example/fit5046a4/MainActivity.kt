@@ -48,28 +48,13 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // ✅ Ask notification permission
+        // notification permission
         requestNotificationPermission()
 
-        // ✅ Schedule WorkManager (real schedule)
+        // Schedule WorkManager (real schedule)
         scheduleFridgeWorker(this)
 
-        // ✅ Debug WorkManager state
-        WorkManager.getInstance(this)
-            .getWorkInfosForUniqueWorkLiveData("fridge_worker")
-            .observe(this) { workInfos ->
-                workInfos.forEach { info ->
-                    Log.d("WorkerStatus", "State: ${info.state}")
-                }
-            }
-
-        // ✅ TEST: Run OneTime request after 5 seconds
-//        val testRequest = OneTimeWorkRequestBuilder<FridgeWorker>()
-//            .setInitialDelay(5, TimeUnit.SECONDS)
-//            .build()
-//        WorkManager.getInstance(this).enqueue(testRequest)
-
-        // ✅ TEST: Run OneTime request immediately for testing
+        //  TEST: Run OneTime request immediately for testing
         val testRequest = OneTimeWorkRequestBuilder<FridgeWorker>().build()
         WorkManager.getInstance(this).enqueue(testRequest)
 
@@ -92,7 +77,7 @@ class MainActivity : ComponentActivity() {
                 ActivityCompat.requestPermissions(
                     this,
                     arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),
-                    1001
+                    100
                 )
             }
         }
@@ -103,18 +88,17 @@ class MainActivity : ComponentActivity() {
 @RequiresApi(Build.VERSION_CODES.O)
 fun calculateDelayUntil2PM(): Long {
     val now = LocalDateTime.now()
-    val targetTime = now.withHour(15).withMinute(33).withSecond(0).withNano(0)
+    val targetTime = now.withHour(12).withMinute(0).withSecond(0).withNano(0)
 
     val delay = if (now.isAfter(targetTime)) {
-        Duration.between(now, targetTime.plusDays(1))
+        Duration.between(now, targetTime.plusDays(1))  // push notification once everyday
     } else {
         Duration.between(now, targetTime)
     }
-
     return delay.toMillis()
 }
 
-// scheudle FridgeWorker alert
+// schedule FridgeWorker alert
 @RequiresApi(Build.VERSION_CODES.O)
 fun scheduleFridgeWorker(context: Context) {
     val delayInMillis = calculateDelayUntil2PM()
@@ -130,8 +114,6 @@ fun scheduleFridgeWorker(context: Context) {
     )
 
 }
-
-
 
 
 //@Composable

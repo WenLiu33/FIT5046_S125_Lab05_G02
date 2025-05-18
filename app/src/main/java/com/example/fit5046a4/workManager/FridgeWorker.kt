@@ -27,7 +27,6 @@ class FridgeWorker (
 ): CoroutineWorker(context, workerParams) {
 
     override suspend fun doWork(): Result {
-        Log.d("FridageWorker", "Worker is running...") // ✅ Log here to check
 
         // get all ingredients from room
         val db = IngredientDatabase.getDatabase(context)
@@ -72,7 +71,7 @@ class FridgeWorker (
             manager.createNotificationChannel(channel)
         }
 
-        //  Build and send the notification
+        //  build and send the notification
         val notification = NotificationCompat.Builder(context, "fridge_channel")
             .setSmallIcon(R.drawable.expiry_date)
             .setContentTitle("Items Expiry Alert")
@@ -80,7 +79,7 @@ class FridgeWorker (
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .build()
 
-        NotificationManagerCompat.from(context).notify(1001, notification)
+        NotificationManagerCompat.from(context).notify(100, notification)
 
         //  return success
         return Result.success()
