@@ -1,5 +1,8 @@
 package com.example.fit5046a4
 //noinspection UsingMaterialAndMaterial3Libraries
+import android.os.Build
+import androidx.annotation.RequiresApi
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.BottomNavigation
 //noinspection UsingMaterialAndMaterial3Libraries
@@ -22,16 +25,18 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.fit5046a4.reportScreen.Report
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)
 @Composable
 fun BottomNavigationBarAndTopBar() {
     val navRoutes = listOf(
-        NavRoute("home", R.drawable.home_20, "Home"),
+//        NavRoute("home", R.drawable.home_20, "Home"),
         NavRoute("fridge", R.drawable.refrigerator_20 , "Fridge"),
-        NavRoute("cook", R.drawable.mix_20, "Cook"),
-        NavRoute("report", R.drawable.report, "Report")
+        NavRoute("dashboard", R.drawable.report, "Dashboard"),
+        NavRoute("cook", R.drawable.mix_20, "Cook")
     )
 
     val navController = rememberNavController()
@@ -45,10 +50,11 @@ fun BottomNavigationBarAndTopBar() {
                 title = {
                     Text(
                         text = when (currentRoute) {
-                            "home" -> "Home"
+//                            "home" -> "Home"
                             "fridge" -> "My Fridge"
                             "cook" -> "Cook a Meal"
-                            "report" -> "Report"
+                            "dashboard" -> "Dashboard"
+                            "add_ingredient" -> "Add Ingredients"
                             else -> ""
                         },
                         style = MaterialTheme.typography.titleLarge
@@ -62,7 +68,7 @@ fun BottomNavigationBarAndTopBar() {
         },
         bottomBar = {
             BottomNavigation(
-                modifier = Modifier.padding(bottom = 2.dp),
+                modifier = Modifier.padding(bottom = 2.dp).height(65.dp),
                 backgroundColor = MaterialTheme.colorScheme.primaryContainer,
                 contentColor = MaterialTheme.colorScheme.onPrimary
             ) {
@@ -95,13 +101,21 @@ fun BottomNavigationBarAndTopBar() {
     ) { paddingValues ->
         NavHost(
             navController = navController,
-            startDestination = "home",
+            startDestination = "dashboard",
             modifier = Modifier.padding(paddingValues)
         ) {
-            composable("home") { Home() }
+            composable("dashboard") { Report() }
+//            composable("home") { Home() }
             composable("cook") { Cook() }
-            composable("fridge") { Fridge() }
-            composable("report") { Report() }
+            //Fridge screen receives navController to allow for internal in-screen navigation.
+            //Specifically, the "Add Ingredient" button inside the Fridge screen uses it to navigate to the Add Ingredient screen.
+            composable("fridge") { Fridge(navController) }
+
+            composable("add_ingredient") {
+                //This route handles navigation to the Add Ingredient screen.
+                //It is not part of the bottom navigation bar used for internal flow only, triggered from the Fridge screen.
+                AddIngredientScreen(navController)
+            }
         }
     }
 }

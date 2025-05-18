@@ -15,7 +15,8 @@ val ingredients = listOf(
         unit       = "L",
         unitPrice  = 1.99f,
         insertDate = dateFormat.parse("2025-05-01")!!,
-        expiryDate = dateFormat.parse("2025-05-13")!!
+        expiryDate = dateFormat.parse("2025-05-13")!!,
+        category   = "Dairy"
     ),
     Ingredient(
         name       = "Eggs",
@@ -23,7 +24,8 @@ val ingredients = listOf(
         unit       = "pcs",
         unitPrice  = 0.25f,
         insertDate = dateFormat.parse("2025-05-02")!!,
-        expiryDate = dateFormat.parse("2025-05-13")!!
+        expiryDate = dateFormat.parse("2025-05-13")!!,
+        category   = "Protein"
     ),
     Ingredient(
         name       = "Butter",
@@ -31,7 +33,8 @@ val ingredients = listOf(
         unit       = "kg",
         unitPrice  = 5.49f,
         insertDate = dateFormat.parse("2025-04-30")!!,
-        expiryDate = dateFormat.parse("2025-06-01")!!
+        expiryDate = dateFormat.parse("2025-06-01")!!,
+        category   = "Dairy"
     ),
     Ingredient(
         name       = "Cheese",
@@ -39,7 +42,8 @@ val ingredients = listOf(
         unit       = "g",
         unitPrice  = 4.99f,
         insertDate = dateFormat.parse("2025-05-03")!!,
-        expiryDate = dateFormat.parse("2025-06-03")!!
+        expiryDate = dateFormat.parse("2025-06-03")!!,
+        category   = "Dairy"
     ),
     Ingredient(
         name       = "Yogurt",
@@ -47,7 +51,8 @@ val ingredients = listOf(
         unit       = "cups",
         unitPrice  = 0.99f,
         insertDate = dateFormat.parse("2025-05-01")!!,
-        expiryDate = dateFormat.parse("2025-05-08")!!
+        expiryDate = dateFormat.parse("2025-05-08")!!,
+        category   = "Dairy"
     ),
     Ingredient(
         name       = "Apple",
@@ -55,7 +60,8 @@ val ingredients = listOf(
         unit       = "pcs",
         unitPrice  = 0.30f,
         insertDate = dateFormat.parse("2025-05-04")!!,
-        expiryDate = dateFormat.parse("2025-05-14")!!
+        expiryDate = dateFormat.parse("2025-05-14")!!,
+        category   = "Produce"
     ),
     Ingredient(
         name       = "Banana",
@@ -63,7 +69,8 @@ val ingredients = listOf(
         unit       = "pcs",
         unitPrice  = 0.20f,
         insertDate = dateFormat.parse("2025-05-05")!!,
-        expiryDate = dateFormat.parse("2025-05-13")!!
+        expiryDate = dateFormat.parse("2025-05-13")!!,
+        category   = "Produce"
     ),
     Ingredient(
         name       = "Carrot",
@@ -71,7 +78,8 @@ val ingredients = listOf(
         unit       = "kg",
         unitPrice  = 2.29f,
         insertDate = dateFormat.parse("2025-05-02")!!,
-        expiryDate = dateFormat.parse("2025-05-20")!!
+        expiryDate = dateFormat.parse("2025-05-20")!!,
+        category   = "Produce"
     ),
     Ingredient(
         name       = "Chicken Breast",
@@ -79,7 +87,8 @@ val ingredients = listOf(
         unit       = "kg",
         unitPrice  = 7.99f,
         insertDate = dateFormat.parse("2025-05-03")!!,
-        expiryDate = dateFormat.parse("2025-05-09")!!
+        expiryDate = dateFormat.parse("2025-05-09")!!,
+        category   = "Protein"
     ),
     Ingredient(
         name       = "Bread",
@@ -87,6 +96,44 @@ val ingredients = listOf(
         unit       = "loaf",
         unitPrice  = 2.50f,
         insertDate = dateFormat.parse("2025-05-06")!!,
-        expiryDate = dateFormat.parse("2025-05-08")!!
+        expiryDate = dateFormat.parse("2025-05-08")!!,
+        category   = "Bakery"
+    ),
+    Ingredient(
+        name       = "Bread1",
+        quantity   = 10,
+        unit       = "loaf",
+        unitPrice  = 2.50f,
+        insertDate = dateFormat.parse("2025-05-15")!!,
+        expiryDate = dateFormat.parse("2025-05-16")!!,
+        category   = "Bakery"
+    ),
+    Ingredient(
+        name       = "Bread2",
+        quantity   = 20,
+        unit       = "loaf",
+        unitPrice  = 2.50f,
+        insertDate = dateFormat.parse("2025-05-14")!!,
+        expiryDate = dateFormat.parse("2025-05-18")!!,
+        category   = "Diary"
+    ),
+    Ingredient(
+        name       = "Bread3",
+        quantity   = 50,
+        unit       = "loaf",
+        unitPrice  = 2.50f,
+        insertDate = dateFormat.parse("2025-05-11")!!,
+        expiryDate = dateFormat.parse("2025-05-18")!!,
+        category   = "Cafe"
+    ),
+    Ingredient(
+        name       = "Bread4",
+        quantity   = 40,
+        unit       = "loaf",
+        unitPrice  = 2.50f,
+        insertDate = dateFormat.parse("2025-05-18")!!,
+        expiryDate = dateFormat.parse("2025-05-20")!!,
+        category   = "Americano"
     )
+
 )
