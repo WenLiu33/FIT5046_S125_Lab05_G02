@@ -11,7 +11,4 @@ interface RetrofitInterface {
     @GET("categories.php")
     suspend fun getCategories(): Response<CategoryResponse>
 
-    @GET("search.php")
-    suspend fun getSearchResults(@Query("s") keyword: String): SearchResponse
-
 }

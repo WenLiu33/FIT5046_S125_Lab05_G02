@@ -15,7 +15,7 @@ val ingredients = listOf(
         unit       = "L",
         unitPrice  = 1.99f,
         insertDate = dateFormat.parse("2025-05-01")!!,
-        expiryDate = dateFormat.parse("2025-05-13")!!,
+        expiryDate = dateFormat.parse("2025-05-19")!!,
         category   = "Dairy"
     ),
     Ingredient(
@@ -135,5 +135,7 @@ val ingredients = listOf(
         expiryDate = dateFormat.parse("2025-05-20")!!,
         category   = "Americano"
     )
+
+
 
 )
