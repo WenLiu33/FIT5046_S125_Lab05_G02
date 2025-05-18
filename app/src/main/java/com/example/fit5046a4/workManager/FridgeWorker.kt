@@ -20,7 +20,8 @@ import com.example.fit5046a4.database.IngredientDatabase
 import com.example.fit5046a4.database.isExpiringSoon
 
 
-class FridageWorker (
+
+class FridgeWorker (
     private val context: Context,
     workerParams: WorkerParameters
 ): CoroutineWorker(context, workerParams) {
@@ -37,7 +38,7 @@ class FridageWorker (
 
         // push a notification if any item going to expire
         if (itemExpiringSoon.isNotEmpty()) {
-            sendNoticication(itemExpiringSoon)
+            sendNotification(itemExpiringSoon)
         }
 
         // Later: add sync to Firebase here
@@ -46,7 +47,7 @@ class FridageWorker (
         return Result.success()
     }
 
-    private fun sendNoticication(items: List<Ingredient>): Result {
+    private fun sendNotification(items: List<Ingredient>): Result {
         // if Android 13+, check permission first
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
             ContextCompat.checkSelfPermission(

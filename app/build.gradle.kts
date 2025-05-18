@@ -71,10 +71,12 @@ dependencies {
     implementation(libs.coil.compose)
 
 
+
+
     // work manager dependency
     implementation(libs.androidx.work.runtime.ktx)
 
     // Notification dependencies
-    implementation (libs.androidx.core.ktx.v1100) // For working with notifications
+    implementation(libs.androidx.core.ktx)
 
 }

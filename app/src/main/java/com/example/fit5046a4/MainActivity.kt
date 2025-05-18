@@ -30,19 +30,49 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.impl.WorkManagerImpl
 import com.example.fit5046a4.ui.theme.FIT5046A4Theme
-import com.example.fit5046a4.workManager.FridageWorker
+import com.example.fit5046a4.workManager.FridgeWorker
 import java.util.concurrent.TimeUnit
 import java.util.stream.DoubleStream.builder
 import java.time.Duration
 import java.time.LocalDateTime
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.core.content.ContextCompat
+import androidx.core.app.ActivityCompat
+import android.content.pm.PackageManager
+import android.util.Log
+
+
 
 class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // ✅ Schedule WorkManager here
+        // ✅ Ask notification permission
+        requestNotificationPermission()
+
+        // ✅ Schedule WorkManager (real schedule)
         scheduleFridgeWorker(this)
+
+        // ✅ Debug WorkManager state
+        WorkManager.getInstance(this)
+            .getWorkInfosForUniqueWorkLiveData("fridge_worker")
+            .observe(this) { workInfos ->
+                workInfos.forEach { info ->
+                    Log.d("WorkerStatus", "State: ${info.state}")
+                }
+            }
+
+        // ✅ TEST: Run OneTime request after 5 seconds
+//        val testRequest = OneTimeWorkRequestBuilder<FridgeWorker>()
+//            .setInitialDelay(5, TimeUnit.SECONDS)
+//            .build()
+//        WorkManager.getInstance(this).enqueue(testRequest)
+
+        // ✅ TEST: Run OneTime request immediately for testing
+        val testRequest = OneTimeWorkRequestBuilder<FridgeWorker>().build()
+        WorkManager.getInstance(this).enqueue(testRequest)
+
 
         enableEdgeToEdge()
         setContent {
@@ -51,11 +81,29 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
+    private fun requestNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    android.Manifest.permission.POST_NOTIFICATIONS
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),
+                    1001
+                )
+            }
+        }
+    }
 }
 
+
+@RequiresApi(Build.VERSION_CODES.O)
 fun calculateDelayUntil2PM(): Long {
     val now = LocalDateTime.now()
-    val targetTime = now.withHour(14).withMinute(10).withSecond(0).withNano(0)
+    val targetTime = now.withHour(15).withMinute(33).withSecond(0).withNano(0)
 
     val delay = if (now.isAfter(targetTime)) {
         Duration.between(now, targetTime.plusDays(1))
@@ -67,18 +115,20 @@ fun calculateDelayUntil2PM(): Long {
 }
 
 // scheudle FridgeWorker alert
+@RequiresApi(Build.VERSION_CODES.O)
 fun scheduleFridgeWorker(context: Context) {
     val delayInMillis = calculateDelayUntil2PM()
 
-    val request = PeriodicWorkRequestBuilder<FridageWorker>(1, TimeUnit.DAYS)
+    val request = PeriodicWorkRequestBuilder<FridgeWorker>(1, TimeUnit.DAYS)
         .setInitialDelay(delayInMillis, TimeUnit.MILLISECONDS)
         .build()
 
     WorkManager.getInstance(context).enqueueUniquePeriodicWork(
         "fridge_worker",
-        ExistingPeriodicWorkPolicy.KEEP,
+        ExistingPeriodicWorkPolicy.UPDATE,
         request
     )
+
 }
 
 
