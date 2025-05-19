@@ -101,17 +101,17 @@ fun TotalFridgeValue(viewModel: IngredientViewModel = viewModel()){
             contentAlignment = Alignment.Center
         ) {
             Text(
-                "Your fridge is empty!",
+                "Your fridge is currently empty!",
                 style = MaterialTheme.typography.bodyLarge,
                 textAlign = TextAlign.Center
             )
         }
     }else{
         ingredients.forEach{ ingredient ->
-            totalValue += ingredient.unitPrice * ingredient.originalQuantity
+            totalValue += ingredient.unitPrice * ingredient.quantity
         }
         Text(
-            text = "💰 Total value: \$${"%.2f".format(totalValue)}",
+            text = "💰 Current value: \$${"%.2f".format(totalValue)}",
             style = MaterialTheme.typography.bodyLarge
         )
         Spacer(modifier = Modifier.height(16.dp))
@@ -146,13 +146,13 @@ fun ExpiringIngredientsList(viewModel: IngredientViewModel = viewModel()) {
     } else {
         Row(modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween){
-            Text("Ingredients", modifier = Modifier.weight(1f))
+            Text("Item", modifier = Modifier.weight(1f))
             Text("Quantity", modifier = Modifier.weight(0.4f))
             Text("Expiry date")
         }
         Spacer(modifier = Modifier.height(8.dp))
         LazyColumn(
-            modifier = Modifier.height(200.dp),
+            modifier = Modifier.height(150.dp),
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
@@ -197,12 +197,12 @@ fun IngredientsRunningLow(viewModel: IngredientViewModel = viewModel()) {
     } else {
         Row(modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween){
-            Text("Ingredients", modifier = Modifier.weight(1f))
+            Text("Item", modifier = Modifier.weight(1f))
             Text("Quantity", modifier = Modifier.weight(0.3f))
         }
         Spacer(modifier = Modifier.height(8.dp))
         LazyColumn(
-            modifier = Modifier.height(200.dp),
+            modifier = Modifier.height(150.dp),
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
@@ -257,15 +257,15 @@ fun Report(
 //            }
             TotalFridgeValue()
             Spacer(modifier = Modifier.height(16.dp))
-            CollapsibleSection(title = "Ingredients Expiring in 5 days") {
+            CollapsibleSection(title = "Item(s) Expiring in 5 days") {
                 ExpiringIngredientsList()
             }
             Spacer(modifier = Modifier.height(16.dp))
-            CollapsibleSection(title = "Ingredients running low") {
+            CollapsibleSection(title = "Items Running Low") {
                 IngredientsRunningLow()
             }
             Spacer(modifier = Modifier.height(16.dp))
-            CollapsibleSection(title = "Money Spent on Grocery This Week") {
+            CollapsibleSection(title = "Grocery Spendings this Week") {
                 BarChartSection()
             }
             Spacer(modifier = Modifier.height(16.dp))
