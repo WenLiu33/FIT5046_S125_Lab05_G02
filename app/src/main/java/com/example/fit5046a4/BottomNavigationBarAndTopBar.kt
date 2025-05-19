@@ -54,7 +54,8 @@ fun BottomNavigationBarAndTopBar() {
                             "fridge" -> "My Fridge"
                             "cook" -> "Cook a Meal"
                             "dashboard" -> "Dashboard"
-                            "add_ingredient" -> "Add Ingredients"
+                            "add_ingredient" -> "Add Items"
+
                             else -> ""
                         },
                         style = MaterialTheme.typography.titleLarge
