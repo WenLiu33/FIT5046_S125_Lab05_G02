@@ -1,5 +1,6 @@
 package com.example.fit5046a4.loginScreen
 
+import android.app.Activity
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -255,14 +256,17 @@ fun LoginGoogle(
     val googleSignInLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
     ) {
-        GoogleSignInUtils.doGoogleSignIn(
-            context = context,
-            scope = coroutineScope,
-            launcher = null,
-            login = onSuccess
-        )
+            result ->
+        // Add this check:
+        if (result.resultCode == Activity.RESULT_OK) {
+            GoogleSignInUtils.doGoogleSignIn(
+                context = context,
+                scope = coroutineScope,
+                launcher = null,  // Prevent infinite loop
+                login = onSuccess
+            )
+        }
     }
-
 
     Box() {
         ElevatedButton(

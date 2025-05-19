@@ -88,7 +88,7 @@ class GoogleSignInUtils {
         private fun getCredentialOptions(context: Context):CredentialOption{
             return GetGoogleIdOption.Builder()
                 .setFilterByAuthorizedAccounts(false)
-                .setAutoSelectEnabled(false)
+                .setAutoSelectEnabled(true)
                 .setServerClientId(context.getString(R.string.web_client_id))
                 .build()
         }
