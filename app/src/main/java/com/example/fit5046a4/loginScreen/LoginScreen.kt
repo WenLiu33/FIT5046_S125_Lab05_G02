@@ -1,4 +1,4 @@
-package com.example.fit5046a4
+package com.example.fit5046a4.loginScreen
 
 import android.util.Log
 import androidx.compose.foundation.BorderStroke
@@ -36,7 +36,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -45,12 +44,15 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.fit5046a4.R
 
 @Composable
-fun LoginScreen() {
+fun LoginScreen(
+    onNavigateToMain: () -> Unit,
+    onNavigateToRegister: () -> Unit
+) {
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -172,7 +174,10 @@ fun LoginScreen() {
 
             // Login Button
             FilledTonalButton(
-                onClick = { Log.i("Credential", "Email: $email, Password: $password")},
+                onClick = {
+                    Log.i("Credential", "Email: $email, Password: $password")
+                    onNavigateToMain()
+                          },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),
@@ -197,7 +202,7 @@ fun LoginScreen() {
 
 
             TextButton(
-                onClick = { /* Navigate to registration screen */ },
+                onClick = onNavigateToRegister,
                 modifier = Modifier.padding(top = 16.dp)
             ) {
                 Text(
@@ -271,3 +276,9 @@ fun LoginGoogle() {
         }
     }
 }
+
+//@Preview(showBackground = true)
+//@Composable
+//fun LoginPreview() {
+//    LoginScreen()
+//}

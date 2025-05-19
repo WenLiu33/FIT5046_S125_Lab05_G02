@@ -1,6 +1,5 @@
-package com.example.fit5046a4
+package com.example.fit5046a4.registerScreen
 
-import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -20,7 +19,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
@@ -45,12 +43,16 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.fit5046a4.R
+import com.example.fit5046a4.loginScreen.DividerWithText
 
 @Composable
-fun RegisterScreen() {
+fun RegisterScreen(
+    onNavigateToMain: () -> Unit,
+    onNavigateToLogin: () -> Unit
+) {
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -206,7 +208,7 @@ fun RegisterScreen() {
 
             // Register Button
             FilledTonalButton(
-                onClick = {},
+                onClick = onNavigateToMain,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),
@@ -231,7 +233,7 @@ fun RegisterScreen() {
 
 
             TextButton(
-                onClick = { /* Navigate to registration screen */ },
+                onClick = onNavigateToLogin,
                 modifier = Modifier.padding(top = 16.dp)
             ) {
                 Text(
@@ -318,8 +320,8 @@ fun TermsCheckbox(
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun RegisterPreview() {
-    RegisterScreen()
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun RegisterPreview() {
+//    RegisterScreen()
+//}

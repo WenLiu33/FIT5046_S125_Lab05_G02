@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -79,4 +80,9 @@ dependencies {
     // Notification dependencies
     implementation(libs.androidx.core.ktx)
 
+    // Import the Firebase BoM
+    implementation(libs.firebase.bom)
+
+    // Add the dependency for the Firebase Authentication library
+    implementation(libs.firebase.auth)
 }
