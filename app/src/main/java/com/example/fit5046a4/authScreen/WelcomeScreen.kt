@@ -1,4 +1,4 @@
-package com.example.fit5046a4
+package com.example.fit5046a4.authScreen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -16,7 +16,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,6 +25,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.fit5046a4.R
 
 @Composable
 fun WelcomeScreen() {
@@ -118,7 +118,7 @@ fun WelcomeScreen() {
                         contentColor = Color(0xFF415F91)
                     )
                 ) {
-                    Text("Register", fontSize = 18.sp)
+                     Text("Register", fontSize = 18.sp)
                 }
             }
         }
