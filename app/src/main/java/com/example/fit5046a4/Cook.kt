@@ -16,6 +16,8 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 
 import androidx.compose.material3.*
@@ -27,13 +29,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import com.example.fit5046a4.ui.theme.FIT5046A4Theme
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.AsyncImage
+import com.example.fit5046a4.api.RecipeViewModel
 
 @Composable
 fun Cook(viewModel: RecipeViewModel = viewModel(), modifier: Modifier = Modifier) {
@@ -128,22 +133,48 @@ fun Cook(viewModel: RecipeViewModel = viewModel(), modifier: Modifier = Modifier
             else -> emptyList()
         }
 
-        categories.forEach { category ->
-            Log.d("Category Type", "category type: ${category::class.java}")
-            Surface(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 6.dp),
-                shape = RoundedCornerShape(8.dp),
-                tonalElevation = 2.dp
-            ) {
-                Text(
-                    text = category.strCategory ?: "Unknown category",
-                    modifier = Modifier.padding(16.dp),
-                    style = MaterialTheme.typography.bodyLarge
-                )
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(categories.filterNotNull()) { category ->
+                Surface(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(8.dp),
+                    tonalElevation = 2.dp
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        // Image
+                        category.strCategoryThumb?.let { imageUrl ->
+                            AsyncImage(
+                                model = imageUrl,
+                                contentDescription = category.strCategory,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(180.dp)
+                                    .clip(RoundedCornerShape(8.dp)),
+                                contentScale = ContentScale.Crop
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                        }
+
+                        // Name
+                        Text(
+                            text = category.strCategory ?: "Unknown category",
+                            style = MaterialTheme.typography.titleMedium
+                        )
+
+                        // Description
+                        Text(
+                            text = category.strCategoryDescription ?: "",
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
+                }
             }
         }
+
 
         Button(
             onClick = { /* TODO: Implement Cooking action */ },
