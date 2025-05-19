@@ -95,15 +95,14 @@ import java.util.Locale
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddIngredientsToDB(viewModel: IngredientViewModel, navController: NavController) {
-    //val ingredients by viewModel.allIngredients.collectAsState(initial = emptyList())
-    //rememberSaveable so even if user accidentally taps into another screen the inputs are still there
 
+    //rememberSaveable so even if user accidentally taps into another screen the inputs are still there
     var name by rememberSaveable { mutableStateOf("") }
     var quantity by rememberSaveable { mutableStateOf("") }
     var unit by rememberSaveable { mutableStateOf("") }
     var unitPrice by rememberSaveable { mutableStateOf("") }
     var expiryDateText by rememberSaveable { mutableStateOf("") }
-    var expiryDate by rememberSaveable { mutableStateOf(Date())}
+    var expiryDate by rememberSaveable { mutableStateOf(Date()) }
     val formatter = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
 
     var category by rememberSaveable { mutableStateOf("") }
@@ -120,7 +119,7 @@ fun AddIngredientsToDB(viewModel: IngredientViewModel, navController: NavControl
                 })
             },
         verticalArrangement = Arrangement.spacedBy(10.dp)
-    ){
+    ) {
         Text("Item:", fontSize = 16.sp, fontWeight = FontWeight.Medium)
         TextField(
             value = name,
@@ -130,7 +129,7 @@ fun AddIngredientsToDB(viewModel: IngredientViewModel, navController: NavControl
                 .clip(RoundedCornerShape(10.dp)),
             shape = RoundedCornerShape(10.dp),
 
-            // when user clicks on the textfield, it changes colour to indicate click
+            // When user clicks on the textfield, it changes colour to indicate click
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = Color(0xFFD7DEFB).copy(alpha = 0.6f),
                 unfocusedContainerColor = Color(0xFFD7DEFB).copy(alpha = 0.2f)
@@ -141,7 +140,7 @@ fun AddIngredientsToDB(viewModel: IngredientViewModel, navController: NavControl
         //Accepts input from a numerical keyboard only
         //To enable on emulator, go to settings, disable stylus input
         //and enable on screen keyboard
-        Text("Quantity & Unit:",fontSize = 15.sp, fontWeight = FontWeight.Medium)
+        Text("Quantity & Unit:", fontSize = 15.sp, fontWeight = FontWeight.Medium)
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -168,7 +167,7 @@ fun AddIngredientsToDB(viewModel: IngredientViewModel, navController: NavControl
 
             )
 
-            UnitDropDown( // ** properly nested inside Row with quantity field **
+            UnitDropDown(
                 selectedUnit = unit,
                 onUnitSelected = { unit = it },
                 modifier = Modifier.weight(1f)
@@ -184,7 +183,7 @@ fun AddIngredientsToDB(viewModel: IngredientViewModel, navController: NavControl
             TextField(
                 value = unitPrice,
                 onValueChange = { unitPrice = it },
-                placeholder = { Text("e.g. 2.50" ,fontSize = 14.sp) },
+                placeholder = { Text("e.g. 2.50", fontSize = 14.sp) },
 
                 //numerical keyboard
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -210,7 +209,12 @@ fun AddIngredientsToDB(viewModel: IngredientViewModel, navController: NavControl
 
         }
 
-        Text("Expiry Date:", modifier = Modifier.padding(top = 4.dp), fontSize = 15.sp, fontWeight = FontWeight.Medium)
+        Text(
+            "Expiry Date:",
+            modifier = Modifier.padding(top = 4.dp),
+            fontSize = 15.sp,
+            fontWeight = FontWeight.Medium
+        )
 
         //ExpiryDatePickerField() is called here so a calender is displayed
         //User selects expiry date on the calender date-picker pop-up
@@ -229,50 +233,16 @@ fun AddIngredientsToDB(viewModel: IngredientViewModel, navController: NavControl
             horizontalArrangement = Arrangement.Center
         ) {
             //Checking inputs for clean data entry into the Database//
-            //TO DO: More validation checks
-            //TO DO: Cancel if user decides to not add anything
-            //TO DO: After cancellation or add ingredient, user is directed to fridge homescreen OR?
-            //Pop up asking if user wants to add more ingredients or not (if we have time)
-//            ElevatedButton(
-//                onClick = {
-//                    if (name.isNotBlank() && quantity.isNotBlank() && unit.isNotBlank() && unitPrice.isNotBlank()) {
-//                        val ingredient = Ingredient(
-//                            name = name.trim().replaceFirstChar { it.uppercaseChar() },
-//                            quantity = quantity.toIntOrNull() ?: 0,
-//                            unit = unit.trim(),
-//                            unitPrice = if (quantity.toFloatOrNull() != null && quantity.toFloatOrNull() != 0f) {
-//                                (unitPrice.toFloatOrNull() ?: 0f) / quantity.toFloatOrNull()!!
-//                            } else 0f,
-//                            insertDate = Date(),
-//                            expiryDate = expiryDate,
-//                            category = category
-//                        )
-//                        viewModel.insertIngredient(ingredient)
-//                        name = ""; quantity = ""; unit = ""; unitPrice = ""; expiryDateText = ""; category = ""
-//                        Toast.makeText(context, "Item added!", Toast.LENGTH_SHORT).show()
-//                    } else {
-//                        Toast.makeText(context, "Please fill all fields", Toast.LENGTH_SHORT)
-//                            .show()
-//                    }
-//                },
-//                shape = RoundedCornerShape(12.dp)
-//            ) {
-//                Icon(
-//                    imageVector = Icons.Default.Add,
-//                    contentDescription = "Add",
-//                    modifier = Modifier.padding(end = 8.dp)
-//                )
-//                Text(text = "Add Item")
-//            }
-
+            //Each statement returns to @ElevatedButton upon failing to prevent crash
             ElevatedButton(
                 onClick = {
-
+                    // Check for blank fields before submission
                     if (name.isBlank() || quantity.isBlank() || unitPrice.isBlank() || expiryDateText.isBlank() || category.isBlank()) {
                         Toast.makeText(context, "Plese fill all fields", Toast.LENGTH_SHORT).show()
                         return@ElevatedButton
                     }
 
+                    // Ensure quantity is a valid Int and > 0
                     if (quantity.toIntOrNull() == null || quantity.toInt() <= 0) {
                         Toast.makeText(
                             context,
@@ -282,12 +252,23 @@ fun AddIngredientsToDB(viewModel: IngredientViewModel, navController: NavControl
                         return@ElevatedButton
                     }
 
-                    if (unitPrice.toFloatOrNull() == null || unitPrice.toFloat() < 0f) {
-                        Toast.makeText(context, "Please enter a valid price", Toast.LENGTH_SHORT)
-                            .show()
+                    //Multiple checks for unit price to allow free items
+                    val price = unitPrice.toFloatOrNull()
+                    if (price == null) {
+                        Toast.makeText(context, "Please enter a valid price", Toast.LENGTH_SHORT).show()
                         return@ElevatedButton
                     }
+                    if (price < 0f) {
+                        Toast.makeText(context, "Price cannot be negative", Toast.LENGTH_SHORT).show()
+                        return@ElevatedButton
+                    }
+                    //if item is $0, it will be marked as free
+                    // This is special scenario where e.g. user may have potentially received free food from neighbours
+                    if (price == 0f) {
+                        Toast.makeText(context, "Note: item marked as free", Toast.LENGTH_SHORT).show()
+                    }
 
+                    //Checks expiry date, show a toast warning if expiry date is before today
                     if (expiryDate.before(Date())) {
                         Toast.makeText(
                             context,
@@ -324,13 +305,13 @@ fun AddIngredientsToDB(viewModel: IngredientViewModel, navController: NavControl
 
             //This is button for user when they want to cancel adding ingredients
             //When this is clicked, all fields will be cleared and user will be redirected back to fridge screen
-            //TO DO: navigation
             ElevatedButton(
                 onClick = {
-                    name = ""; quantity = ""; unit = ""; unitPrice = ""; expiryDateText = ""; category = ""
+                    name = ""; quantity = ""; unit = ""; unitPrice = ""; expiryDateText =
+                    ""; category = ""
                     //navigates user back to fridge screen upon cancellation
-                    navController.navigate("fridge"){
-                        popUpTo("add_ingredient"){
+                    navController.navigate("fridge") {
+                        popUpTo("add_ingredient") {
                             inclusive = true
                         }
                     }
@@ -373,31 +354,31 @@ fun AddIngredientScreen(navController: NavController) {
 //            )
 //        }
 //    ) { innerPadding ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                //.padding(innerPadding)
-                .padding(horizontal = 24.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            item {
-                Spacer(modifier = Modifier.height(20.dp))
-            }
-            item {
-                val image: Painter = painterResource(R.drawable.grocery)
-                Image(
-                    painter = image,
-                    contentDescription = "Grocery Image",
-                    modifier = Modifier.size(150.dp)
-                )
-            }
-            item {
-                AddIngredientsToDB(viewModel = viewModel(), navController = navController)
-            }
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            //.padding(innerPadding)
+            .padding(horizontal = 24.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        item {
+            Spacer(modifier = Modifier.height(20.dp))
         }
-
+        item {
+            val image: Painter = painterResource(R.drawable.grocery)
+            Image(
+                painter = image,
+                contentDescription = "Grocery Image",
+                modifier = Modifier.size(150.dp)
+            )
+        }
+        item {
+            AddIngredientsToDB(viewModel = viewModel(), navController = navController)
+        }
     }
+
+}
 
 //This function will have unit as a drop down menu
 //This will be called into the AddIngredientsToDB() function
@@ -463,7 +444,7 @@ fun UnitDropDown(
 //This function will be the date picker for expiry date
 //This will be called into the AddIngredientsToDB() function
 //Week3 lab content
-//parameter logic similar to UnitDropDown function
+//Parameter logic similar to @UnitDropDown function
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -527,7 +508,7 @@ fun ExpiryDatePickerField(
                     Text("Cancel")
                 }
             }
-        ) //end of dialogue
+        )
         {
             DatePicker(state = datePickerState)
         }
@@ -570,7 +551,7 @@ fun CategoryDropDown(
                 unfocusedContainerColor = Color(0xFFD7DEFB).copy(alpha = 0.2f)
 
             ),
-            //manages the arrow icon up and down
+            //Manages the arrow icon up and down
             trailingIcon = {
                 ExposedDropdownMenuDefaults.TrailingIcon(expanded = isExpanded)
             },
