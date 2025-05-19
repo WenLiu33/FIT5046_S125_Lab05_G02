@@ -27,7 +27,7 @@ fun AppRoot() {
             onNavigateToLogin = {navController.navigateUp()}
         )
         composable("MainApp") {
-            BottomNavigationBarAndTopBar()  // Your existing main app
+            BottomNavigationBarAndTopBar()
         }
     }
 }

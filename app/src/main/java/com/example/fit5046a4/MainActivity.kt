@@ -40,7 +40,6 @@ class MainActivity : ComponentActivity() {
         setContent {
             FIT5046A4Theme {
                 AppRoot()
-               //BottomNavigationBarAndTopBar()
             }
         }
     }
