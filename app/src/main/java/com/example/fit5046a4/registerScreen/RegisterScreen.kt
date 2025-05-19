@@ -1,4 +1,4 @@
-package com.example.fit5046a4.authScreen
+package com.example.fit5046a4.registerScreen
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -43,10 +43,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.fit5046a4.R
+import com.example.fit5046a4.loginScreen.DividerWithText
 
 @Composable
 fun RegisterScreen(
@@ -208,7 +208,7 @@ fun RegisterScreen(
 
             // Register Button
             FilledTonalButton(
-                onClick = { onNavigateToMain },
+                onClick = onNavigateToMain,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),

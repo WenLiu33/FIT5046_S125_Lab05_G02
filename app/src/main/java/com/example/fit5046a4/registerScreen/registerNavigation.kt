@@ -1,4 +1,4 @@
-package com.example.fit5046a4.authScreen
+package com.example.fit5046a4.registerScreen
 
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
