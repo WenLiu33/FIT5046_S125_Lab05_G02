@@ -125,8 +125,8 @@ fun WelcomeScreen() {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun WelcomeScreenPreview() {
-    WelcomeScreen()
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun WelcomeScreenPreview() {
+//    WelcomeScreen()
+//}

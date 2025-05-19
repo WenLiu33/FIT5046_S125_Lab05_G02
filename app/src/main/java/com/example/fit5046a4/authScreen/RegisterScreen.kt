@@ -320,8 +320,8 @@ fun TermsCheckbox(
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun RegisterPreview() {
-    RegisterScreen()
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun RegisterPreview() {
+//    RegisterScreen()
+//}

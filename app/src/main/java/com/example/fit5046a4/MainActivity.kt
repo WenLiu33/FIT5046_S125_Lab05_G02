@@ -7,11 +7,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
@@ -23,7 +18,6 @@ import java.time.LocalDateTime
 import androidx.core.content.ContextCompat
 import androidx.core.app.ActivityCompat
 import android.content.pm.PackageManager
-import com.example.fit5046a4.authScreen.LoginScreen
 
 
 class MainActivity : ComponentActivity() {
@@ -45,7 +39,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             FIT5046A4Theme {
-                BottomNavigationBarAndTopBar()
+                AppRoot()
+               //BottomNavigationBarAndTopBar()
             }
         }
     }
@@ -66,23 +61,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
-@Composable
-private fun AppRoot() {
-    val navController = rememberNavController()
-    NavHost(
-        navController = navController,
-        startDestination = "LoginDestination"
-    ) {
-        composable("LoginDestination") {
-            LoginScreen(
-                onNavigateToMain = {},
-                onNavigateToRegister = {}
-            )
-        }
-    }
-}
-
 
 @RequiresApi(Build.VERSION_CODES.O)
 fun calculateDelayUntil2PM(): Long {
@@ -114,20 +92,11 @@ fun scheduleFridgeWorker(context: Context) {
 
 }
 
-
+//@RequiresApi(Build.VERSION_CODES.O)
+//@Preview(showBackground = true)
 //@Composable
-//fun Greeting(name: String, modifier: Modifier = Modifier) {
-//    Text(
-//        text = "Hello $name!",
-//        modifier = modifier
-//    )
+//fun GreetingPreview() {
+//    FIT5046A4Theme {
+//        BottomNavigationBarAndTopBar()
+//    }
 //}
-
-@RequiresApi(Build.VERSION_CODES.O)
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    FIT5046A4Theme {
-        BottomNavigationBarAndTopBar()
-    }
-}
