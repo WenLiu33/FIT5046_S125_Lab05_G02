@@ -12,6 +12,7 @@ val ingredients = listOf(
     Ingredient(
         name       = "Milk",
         quantity   = 2,
+        originalQuantity = 2,
         unit       = "L",
         unitPrice  = 1.99f,
         insertDate = dateFormat.parse("2025-05-01")!!,
@@ -21,6 +22,7 @@ val ingredients = listOf(
     Ingredient(
         name       = "Eggs",
         quantity   = 12,
+        originalQuantity = 12,
         unit       = "pcs",
         unitPrice  = 0.25f,
         insertDate = dateFormat.parse("2025-05-02")!!,
@@ -30,6 +32,7 @@ val ingredients = listOf(
     Ingredient(
         name       = "Butter",
         quantity   = 1,
+        originalQuantity = 1,
         unit       = "kg",
         unitPrice  = 5.49f,
         insertDate = dateFormat.parse("2025-04-30")!!,
@@ -39,6 +42,7 @@ val ingredients = listOf(
     Ingredient(
         name       = "Cheese",
         quantity   = 500,
+        originalQuantity = 500,
         unit       = "g",
         unitPrice  = 4.99f,
         insertDate = dateFormat.parse("2025-05-03")!!,
@@ -48,6 +52,7 @@ val ingredients = listOf(
     Ingredient(
         name       = "Yogurt",
         quantity   = 4,
+        originalQuantity = 4,
         unit       = "cups",
         unitPrice  = 0.99f,
         insertDate = dateFormat.parse("2025-05-01")!!,
@@ -57,6 +62,7 @@ val ingredients = listOf(
     Ingredient(
         name       = "Apple",
         quantity   = 6,
+        originalQuantity = 6,
         unit       = "pcs",
         unitPrice  = 0.30f,
         insertDate = dateFormat.parse("2025-05-04")!!,
@@ -66,6 +72,7 @@ val ingredients = listOf(
     Ingredient(
         name       = "Banana",
         quantity   = 8,
+        originalQuantity = 8,
         unit       = "pcs",
         unitPrice  = 0.20f,
         insertDate = dateFormat.parse("2025-05-05")!!,
@@ -75,6 +82,7 @@ val ingredients = listOf(
     Ingredient(
         name       = "Carrot",
         quantity   = 1,
+        originalQuantity = 1,
         unit       = "kg",
         unitPrice  = 2.29f,
         insertDate = dateFormat.parse("2025-05-02")!!,
@@ -84,6 +92,7 @@ val ingredients = listOf(
     Ingredient(
         name       = "Chicken Breast",
         quantity   = 1,
+        originalQuantity = 1,
         unit       = "kg",
         unitPrice  = 7.99f,
         insertDate = dateFormat.parse("2025-05-03")!!,
@@ -93,6 +102,7 @@ val ingredients = listOf(
     Ingredient(
         name       = "Bread",
         quantity   = 1,
+        originalQuantity = 1,
         unit       = "loaf",
         unitPrice  = 2.50f,
         insertDate = dateFormat.parse("2025-05-06")!!,
@@ -102,6 +112,7 @@ val ingredients = listOf(
     Ingredient(
         name       = "Bread1",
         quantity   = 10,
+        originalQuantity = 10,
         unit       = "loaf",
         unitPrice  = 2.50f,
         insertDate = dateFormat.parse("2025-05-15")!!,
@@ -111,6 +122,7 @@ val ingredients = listOf(
     Ingredient(
         name       = "Bread2",
         quantity   = 20,
+        originalQuantity = 20,
         unit       = "loaf",
         unitPrice  = 2.50f,
         insertDate = dateFormat.parse("2025-05-14")!!,
@@ -120,6 +132,7 @@ val ingredients = listOf(
     Ingredient(
         name       = "Bread3",
         quantity   = 50,
+        originalQuantity = 50,
         unit       = "loaf",
         unitPrice  = 2.50f,
         insertDate = dateFormat.parse("2025-05-11")!!,
@@ -129,13 +142,13 @@ val ingredients = listOf(
     Ingredient(
         name       = "Bread4",
         quantity   = 40,
+        originalQuantity = 40,
         unit       = "loaf",
         unitPrice  = 2.50f,
         insertDate = dateFormat.parse("2025-05-18")!!,
         expiryDate = dateFormat.parse("2025-05-20")!!,
         category   = "Americano"
     )
-
 
 
 )

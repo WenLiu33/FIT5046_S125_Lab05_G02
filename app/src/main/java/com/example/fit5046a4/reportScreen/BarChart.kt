@@ -61,7 +61,7 @@ fun weeklySpendSundayToSaturday(ingredients: List<Ingredient>): List<Float> {
                     .atZone(ZoneId.systemDefault())
                     .toLocalDate() == date
             }
-            .sumOf { it.quantity * it.unitPrice.toDouble() }
+            .sumOf { it.originalQuantity * it.unitPrice.toDouble() }
             .toFloat()
     }
 }
