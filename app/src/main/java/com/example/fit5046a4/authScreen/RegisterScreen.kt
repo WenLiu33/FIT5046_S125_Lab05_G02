@@ -233,7 +233,7 @@ fun RegisterScreen(
 
 
             TextButton(
-                onClick = { onNavigateToLogin },
+                onClick = onNavigateToLogin,
                 modifier = Modifier.padding(top = 16.dp)
             ) {
                 Text(

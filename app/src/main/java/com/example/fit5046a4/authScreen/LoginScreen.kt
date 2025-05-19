@@ -203,7 +203,7 @@ fun LoginScreen(
 
 
             TextButton(
-                onClick = { onNavigateToRegister },
+                onClick = onNavigateToRegister,
                 modifier = Modifier.padding(top = 16.dp)
             ) {
                 Text(
