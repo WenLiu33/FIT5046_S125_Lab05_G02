@@ -108,7 +108,7 @@ fun TotalFridgeValue(viewModel: IngredientViewModel = viewModel()){
         }
     }else{
         ingredients.forEach{ ingredient ->
-            totalValue += ingredient.unitPrice * ingredient.quantity
+            totalValue += ingredient.unitPrice * ingredient.originalQuantity
         }
         Text(
             text = "💰 Total value: \$${"%.2f".format(totalValue)}",

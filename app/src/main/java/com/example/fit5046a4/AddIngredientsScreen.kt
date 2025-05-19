@@ -281,6 +281,7 @@ fun AddIngredientsToDB(viewModel: IngredientViewModel, navController: NavControl
                         name = name.trim().replaceFirstChar { it.uppercaseChar() },
                         quantity = quantity.toInt(),
                         unit = unit,
+                        originalQuantity = quantity.toInt(),
                         unitPrice = unitPrice.toFloat() / quantity.toInt(),
                         insertDate = Date(),
                         expiryDate = expiryDate,

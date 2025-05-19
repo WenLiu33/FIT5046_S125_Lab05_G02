@@ -417,6 +417,8 @@ fun EditIngredientDialog(
                 Button(
                     onClick = {
                         val updated = ingredient.copy(
+                            // not updating the originalQuantity as this is used for report calculations
+                            // instead it is updating the current quantity of the item
                             quantity = quantity.toIntOrNull() ?: ingredient.quantity,
                             unit = selectedUnit
                         )
