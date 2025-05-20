@@ -150,7 +150,7 @@ fun ExpiringIngredientsList(viewModel: IngredientViewModel = viewModel()) {
             )
         }
     } else {
-        Row(modifier = Modifier.fillMaxWidth(),
+        Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 15.dp),
             horizontalArrangement = Arrangement.SpaceBetween){
             Text("Item", modifier = Modifier.weight(1f), style = MaterialTheme.typography.titleMedium)
             Text("Quantity", modifier = Modifier.weight(0.4f), style = MaterialTheme.typography.titleMedium)
@@ -183,7 +183,14 @@ fun IngredientsRunningLow(viewModel: IngredientViewModel = viewModel()) {
         initial = emptyList())
 
     val runningLow = remember(ingredients) {
-        ingredients.filter { it.quantity <= 5 }
+        ingredients.filter { ing ->
+            val isLowQtyG = (ing.unit == "g") && (ing.quantity < 100f)
+            val isLowMl = (ing.unit == "ml") && (ing.quantity < 100f)
+            val isLowPc = (ing.unit == "pc(s)") && (ing.quantity < 5f)
+            val isLowCup = (ing.unit == "cup(s)") && (ing.quantity < 5f)
+
+            isLowQtyG || isLowMl || isLowPc || isLowCup
+        }
     }
 
     if (runningLow.isEmpty()) {
@@ -201,10 +208,10 @@ fun IngredientsRunningLow(viewModel: IngredientViewModel = viewModel()) {
             )
         }
     } else {
-        Row(modifier = Modifier.fillMaxWidth(),
+        Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 15.dp),
             horizontalArrangement = Arrangement.SpaceBetween){
             Text("Item", modifier = Modifier.weight(1f), style = MaterialTheme.typography.titleMedium)
-            Text("Quantity", modifier = Modifier.weight(0.3f), style = MaterialTheme.typography.titleMedium)
+            Text("Quantity", modifier = Modifier.weight(0.4f), style = MaterialTheme.typography.titleMedium)
         }
         Spacer(modifier = Modifier.height(8.dp))
         LazyColumn(
@@ -217,7 +224,7 @@ fun IngredientsRunningLow(viewModel: IngredientViewModel = viewModel()) {
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(ingredient.name, modifier = Modifier.weight(1f) )
-                    Text("${ingredient.quantity} ${ingredient.unit}", modifier = Modifier.weight(0.2f) )
+                    Text("${ingredient.quantity} ${ingredient.unit}", modifier = Modifier.weight(0.35f) )
                 }
             }
         }
