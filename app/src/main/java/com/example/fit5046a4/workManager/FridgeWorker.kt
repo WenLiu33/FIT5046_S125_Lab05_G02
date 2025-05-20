@@ -19,13 +19,26 @@ import com.example.fit5046a4.database.Ingredient
 import com.example.fit5046a4.database.IngredientDatabase
 import com.example.fit5046a4.database.isExpiringSoon
 
-
-
+/**
+ * Worker class to check for expiring ingredients and send notifications.
+ * and sends a notification with the list of expiring items if any are found.
+ *
+ * @param context The application context.
+ * @param workerParams Parameters for the worker.
+ *
+ * @author Sylvia
+ * @version 2.0
+ */
 class FridgeWorker (
     private val context: Context,
     workerParams: WorkerParameters
 ): CoroutineWorker(context, workerParams) {
 
+    /**
+     * Perform the background task to check for expiring ingredients and send notifications.
+     *
+     * @return The result of the worker operation. Returns Result.success() if the task completes successfully.
+     */
     override suspend fun doWork(): Result {
 
         // get all ingredients from room
@@ -40,14 +53,22 @@ class FridgeWorker (
             sendNotification(itemExpiringSoon)
         }
 
-        // Later: add sync to Firebase here
-
         // Return a success result
         return Result.success()
     }
 
+
+    /**
+     * Send a notification with the list of items that are expiring in 5 days.
+     *
+     * This method creates a notification if the device has the required permissions, including creating
+     * a notification channel for devices running Android 8.0 (Oreo) or later.
+     *
+     * @param items A list of [Ingredient] objects that are expiring soon.
+     * @return The result of the worker operation. Returns [Result.success()] after sending the notification.
+     */
     private fun sendNotification(items: List<Ingredient>): Result {
-        //  if Android 13+, check for POST_NOTIFICATIONS permission
+        // AI-generated: if Android 13+, check for POST_NOTIFICATIONS permission
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
             ContextCompat.checkSelfPermission(
                 context,
@@ -61,7 +82,7 @@ class FridgeWorker (
         // use a comma separated list of item
         val itemName = items.joinToString(", ") { it.name }
 
-        // create channel (Android 8+)
+        // AI-generated: create channel (Android 8+)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 "fridge_channel",
@@ -72,7 +93,7 @@ class FridgeWorker (
             manager.createNotificationChannel(channel)
         }
 
-        //  build and send the notification
+        // AI-generated: build and send the notification
         val notification = NotificationCompat.Builder(context, "fridge_channel")
             .setSmallIcon(R.drawable.expiry_date)
             .setContentTitle("Items Expiry Alert")
@@ -86,8 +107,4 @@ class FridgeWorker (
         return Result.success()
     }
 }
-
-
-
-
 

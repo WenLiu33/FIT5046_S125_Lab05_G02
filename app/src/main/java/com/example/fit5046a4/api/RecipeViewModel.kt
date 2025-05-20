@@ -7,6 +7,19 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 
+/**
+ * ViewModel for managing and providing data related to food categories for different meal types (breakfast, lunch, dinner).
+ *
+ * This ViewModel fetches food category data using a Retrofit service and filters the categories based on keywords for each meal type.
+ * The filtered data is then exposed through LiveData for observation by the UI.
+ *
+ * @property breakfastCategory LiveData containing a list of food categories related to breakfast.
+ * @property lunchCategory LiveData containing a list of food categories related to lunch.
+ * @property dinnerCategory LiveData containing a list of food categories related to dinner.
+ *
+ * @author Sylvia
+ * @version 2.0
+ */
 class RecipeViewModel : ViewModel() {
     // private mutable livedata to store each list
     private val _breakfastCategories = MutableLiveData<List<Category>>()
@@ -18,6 +31,12 @@ class RecipeViewModel : ViewModel() {
     val lunchCategory: LiveData<List<Category>> get() = _lunchCategories
     val dinnerCategory: LiveData<List<Category>> get() = _dinnerCategories
 
+    /**
+     * Fetches the categories of food from the Retrofit service and filters them based on meal types (breakfast, lunch, dinner).
+     *
+     * The method performs an API call to retrieve the food categories and categorizes them into breakfast, lunch, and dinner
+     * based on keywords in the category names. These filtered lists are then posted to the corresponding LiveData properties.
+     */
     fun fetchCategories() {
         viewModelScope.launch {
             try {
@@ -26,7 +45,7 @@ class RecipeViewModel : ViewModel() {
                     val categories = response.body()?.categories
 
 
-                    //filter based on keywords for each meal type
+                    //AI-generated: filter based on keywords for each meal type
                     val breakfast = categories?.filter { it.strCategory.contains("Chicken", ignoreCase = true) ||
                             it.strCategory.contains("Breakfast", ignoreCase = true)||
                             it.strCategory.contains("Vegetarian", ignoreCase = true)}

@@ -40,6 +40,20 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.fit5046a4.api.RecipeViewModel
 
+/**
+ * Composable function to display a screen with a dropdown menu to select meal type
+ * It shows images, names, and descriptions for each food category, and allows the user to interact
+ * with the UI to switch between different meal categories.
+ *
+ * The categories are fetched from the [RecipeViewModel], which provides the data via LiveData.
+ * The UI will display categories dynamically based on the selected meal type.
+ *
+ * @param viewModel The [RecipeViewModel] that provides the food categories for different meal types.
+ * @param modifier Optional modifier to customize the layout.
+ *
+ * @author Sylvia
+ * @version 2.0
+ */
 @Composable
 fun Cook(viewModel: RecipeViewModel = viewModel(), modifier: Modifier = Modifier) {
     // Meal options and selected meal
@@ -51,12 +65,7 @@ fun Cook(viewModel: RecipeViewModel = viewModel(), modifier: Modifier = Modifier
     val lunchCategories by viewModel.lunchCategory.observeAsState(emptyList())
     val dinnerCategories by viewModel.dinnerCategory.observeAsState(emptyList())
 
-    // Log each category in breakfastCategories for debugging
-    breakfastCategories.forEach { category ->
-        Log.d("Category Name", category.strCategory ?: "Unknown")
-    }
-
-    // Trigger ViewModel to fetch categories when the screen is first shown
+    //AI-generated: Trigger ViewModel to fetch categories when the screen is first shown
     LaunchedEffect(Unit) {
         viewModel.fetchCategories()
     }
@@ -133,6 +142,7 @@ fun Cook(viewModel: RecipeViewModel = viewModel(), modifier: Modifier = Modifier
             else -> emptyList()
         }
 
+        // A part of AI generate
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
@@ -173,16 +183,6 @@ fun Cook(viewModel: RecipeViewModel = viewModel(), modifier: Modifier = Modifier
                     }
                 }
             }
-        }
-
-
-        Button(
-            onClick = { /* TODO: Implement Cooking action */ },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 24.dp),
-        ) {
-            Text("Cook")
         }
     }
 }

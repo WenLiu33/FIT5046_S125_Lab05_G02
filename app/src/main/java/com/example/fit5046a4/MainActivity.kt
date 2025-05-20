@@ -54,7 +54,7 @@ class MainActivity : ComponentActivity() {
         // Schedule WorkManager (real schedule)
         scheduleFridgeWorker(this)
 
-        //  TEST: Run OneTime request immediately for testing
+//         AI-generated: TEST Run OneTime request immediately for testing
 //        val testRequest = OneTimeWorkRequestBuilder<FridgeWorker>().build()
 //        WorkManager.getInstance(this).enqueue(testRequest)
 
@@ -67,6 +67,11 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    /**
+     * Requests notification permission for Android versions TIRAMISU (API 33) and above.
+     * If the permission is not granted, it prompts the user to allow it.
+     */
+    // AI-generated: ask user for notification permission
     private fun requestNotificationPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(
@@ -84,21 +89,32 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-
+/**
+ * Calculates the delay in milliseconds until the next 12 PM (noon).
+ * The delay is adjusted depending on whether the current time is already past 12 PM.
+ *
+ * @return The delay in milliseconds until the next 12 PM.
+ */
 @RequiresApi(Build.VERSION_CODES.O)
 fun calculateDelayUntil2PM(): Long {
     val now = LocalDateTime.now()
     val targetTime = now.withHour(12).withMinute(0).withSecond(0).withNano(0)
 
     val delay = if (now.isAfter(targetTime)) {
-        Duration.between(now, targetTime.plusDays(1))  // push notification once everyday
+        Duration.between(now, targetTime.plusDays(1))  // Schedule for the next day if already past 12 PM
     } else {
-        Duration.between(now, targetTime)
+        Duration.between(now, targetTime) // Schedule for the same day if before 12 PM
     }
     return delay.toMillis()
 }
 
-// schedule FridgeWorker alert
+/**
+ * Schedules the `FridgeWorker` to run periodically every 24 hours at 12 PM.
+ * The worker will check for items in the fridge that are expiring soon and notify the user.
+ *
+ * @param context The application context.
+ */
+//AI-generated: schedule FridgeWorker notification
 @RequiresApi(Build.VERSION_CODES.O)
 fun scheduleFridgeWorker(context: Context) {
     val delayInMillis = calculateDelayUntil2PM()
