@@ -62,7 +62,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             FIT5046A4Theme {
-                BottomNavigationBarAndTopBar()
+                AppRoot()
             }
         }
     }

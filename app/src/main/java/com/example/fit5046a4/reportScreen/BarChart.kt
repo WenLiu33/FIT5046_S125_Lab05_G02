@@ -1,4 +1,5 @@
 import android.os.Build
+import android.view.View.TEXT_ALIGNMENT_VIEW_START
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -15,6 +16,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.fit5046a4.IngredientViewModel
 import com.example.fit5046a4.database.Ingredient
 import com.github.mikephil.charting.charts.BarChart
+import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
@@ -61,7 +63,7 @@ fun weeklySpendSundayToSaturday(ingredients: List<Ingredient>): List<Float> {
                     .atZone(ZoneId.systemDefault())
                     .toLocalDate() == date
             }
-            .sumOf { it.quantity * it.unitPrice.toDouble() }
+            .sumOf { it.originalQuantity * it.unitPrice.toDouble() }
             .toFloat()
     }
 }
@@ -82,10 +84,9 @@ fun BarChartScreen(viewModel: IngredientViewModel = viewModel()) {
             }
         }
 
-    val barDataSet = BarDataSet(barEntries, "AUD").apply {
+    val barDataSet = BarDataSet(barEntries, "(AUD)").apply {
         colors = macaroonPastelPalette()
-        // Optional: hide the little value-labels above the bars
-        setDrawValues(false)
+        setDrawValues(true)
     }
     barDataSet.colors = macaroonPastelPalette()
     val barData = BarData(barDataSet).apply {
@@ -100,10 +101,24 @@ fun BarChartScreen(viewModel: IngredientViewModel = viewModel()) {
                 data = barData
                 description.isEnabled = false
                 setFitBars(true)
+                legend.apply {
+                    form = Legend.LegendForm.NONE
+                    formSize = 0f
+                    formToTextSpace = 0f
+                    horizontalAlignment = Legend.LegendHorizontalAlignment.LEFT
+                    verticalAlignment = Legend.LegendVerticalAlignment.BOTTOM
+                    orientation = Legend.LegendOrientation.HORIZONTAL
+                    textSize = 11f
+                    isWordWrapEnabled = true
+                    setDrawInside(false)
+                }
                 xAxis.position = XAxis.XAxisPosition.BOTTOM
                 xAxis.valueFormatter =
                     IndexAxisValueFormatter(listOf("Sun","Mon","Tues","Wed","Thurs","Fri","Sat"))
                 animateY(400)
+                setScaleEnabled(false)
+                setPinchZoom(false)
+                setDoubleTapToZoomEnabled(false)
             }
         },
         update = { chart ->

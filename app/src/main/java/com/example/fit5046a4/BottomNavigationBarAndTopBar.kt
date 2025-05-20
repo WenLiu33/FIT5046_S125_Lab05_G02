@@ -5,11 +5,15 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.BottomNavigation
-//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.BottomNavigationItem
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.Icons.AutoMirrored.Sharp
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
+import androidx.compose.material.icons.automirrored.sharp.ExitToApp
 import androidx.compose.material3.Icon
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,7 +37,6 @@ import com.example.fit5046a4.reportScreen.Report
 @Composable
 fun BottomNavigationBarAndTopBar() {
     val navRoutes = listOf(
-//        NavRoute("home", R.drawable.home_20, "Home"),
         NavRoute("fridge", R.drawable.refrigerator_20 , "Fridge"),
         NavRoute("dashboard", R.drawable.report, "Dashboard"),
         NavRoute("cook", R.drawable.mix_20, "Cook")
@@ -54,7 +57,8 @@ fun BottomNavigationBarAndTopBar() {
                             "fridge" -> "My Fridge"
                             "cook" -> "Cook a Meal"
                             "dashboard" -> "Dashboard"
-                            "add_ingredient" -> "Add Ingredients"
+                            "add_ingredient" -> "Add Items"
+
                             else -> ""
                         },
                         style = MaterialTheme.typography.titleLarge
@@ -63,7 +67,22 @@ fun BottomNavigationBarAndTopBar() {
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                )
+                ),
+                actions = {
+                    IconButton(onClick = {
+                        navController.navigate("register"){
+                            popUpTo(navController.graph.startDestinationId){
+                                inclusive = true
+                            }
+                            launchSingleTop = true
+                        }
+                    }) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ExitToApp,
+                            contentDescription = "Log out"
+                        )
+                    }
+                }
             )
         },
         bottomBar = {
@@ -105,17 +124,16 @@ fun BottomNavigationBarAndTopBar() {
             modifier = Modifier.padding(paddingValues)
         ) {
             composable("dashboard") { Report() }
-//            composable("home") { Home() }
             composable("cook") { Cook() }
             //Fridge screen receives navController to allow for internal in-screen navigation.
             //Specifically, the "Add Ingredient" button inside the Fridge screen uses it to navigate to the Add Ingredient screen.
             composable("fridge") { Fridge(navController) }
-
             composable("add_ingredient") {
                 //This route handles navigation to the Add Ingredient screen.
                 //It is not part of the bottom navigation bar used for internal flow only, triggered from the Fridge screen.
                 AddIngredientScreen(navController)
             }
+            composable("register"){ RegisterScreen() }
         }
     }
 }

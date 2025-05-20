@@ -2,6 +2,7 @@ package com.example.fit5046a4.reportScreen
 
 import BarChartScreen
 import PieChartScreen
+import android.R.attr.fontWeight
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
@@ -35,12 +36,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.fit5046a4.IngredientViewModel
@@ -66,7 +70,9 @@ fun CollapsibleSection(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ){
-                    Text(title, style = MaterialTheme.typography.titleMedium)
+                    Text(title, style = MaterialTheme.typography.titleMedium.copy(
+                            fontWeight = FontWeight.SemiBold)
+                    )
                     Icon(
                         imageVector= if (expanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
                         contentDescription = if (expanded) "Collapse" else "Expand"
@@ -101,7 +107,7 @@ fun TotalFridgeValue(viewModel: IngredientViewModel = viewModel()){
             contentAlignment = Alignment.Center
         ) {
             Text(
-                "Your fridge is empty!",
+                "Your fridge is currently empty!",
                 style = MaterialTheme.typography.bodyLarge,
                 textAlign = TextAlign.Center
             )
@@ -111,7 +117,7 @@ fun TotalFridgeValue(viewModel: IngredientViewModel = viewModel()){
             totalValue += ingredient.unitPrice * ingredient.quantity
         }
         Text(
-            text = "💰 Total value: \$${"%.2f".format(totalValue)}",
+            text = "💰 Current value: \$${"%.2f".format(totalValue)}",
             style = MaterialTheme.typography.bodyLarge
         )
         Spacer(modifier = Modifier.height(16.dp))
@@ -146,13 +152,13 @@ fun ExpiringIngredientsList(viewModel: IngredientViewModel = viewModel()) {
     } else {
         Row(modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween){
-            Text("Ingredients", modifier = Modifier.weight(1f))
-            Text("Quantity", modifier = Modifier.weight(0.4f))
-            Text("Expiry date")
+            Text("Item", modifier = Modifier.weight(1f), style = MaterialTheme.typography.titleMedium)
+            Text("Quantity", modifier = Modifier.weight(0.4f), style = MaterialTheme.typography.titleMedium)
+            Text("Expiry date", style = MaterialTheme.typography.titleMedium)
         }
         Spacer(modifier = Modifier.height(8.dp))
         LazyColumn(
-            modifier = Modifier.height(200.dp),
+            modifier = Modifier.height(150.dp),
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
@@ -197,12 +203,12 @@ fun IngredientsRunningLow(viewModel: IngredientViewModel = viewModel()) {
     } else {
         Row(modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween){
-            Text("Ingredients", modifier = Modifier.weight(1f))
-            Text("Quantity", modifier = Modifier.weight(0.3f))
+            Text("Item", modifier = Modifier.weight(1f), style = MaterialTheme.typography.titleMedium)
+            Text("Quantity", modifier = Modifier.weight(0.3f), style = MaterialTheme.typography.titleMedium)
         }
         Spacer(modifier = Modifier.height(8.dp))
         LazyColumn(
-            modifier = Modifier.height(200.dp),
+            modifier = Modifier.height(150.dp),
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
@@ -248,24 +254,29 @@ fun Report(
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.SpaceBetween
         ) {
-            Spacer(modifier = Modifier.height(32.dp))
-            Text("Value of the fridge",
-                color = MaterialTheme.colorScheme.primaryContainer,
-                style    = MaterialTheme.typography.titleLarge )
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(35.dp))
+            Text(
+                text = "Value of Fridge by Category",
+                style = MaterialTheme.typography.titleLarge.copy(
+                    fontWeight = FontWeight.SemiBold,
+                    //More readable
+                    color = Color(0xFF495D92)
+                )
+            )
+            Spacer(modifier = Modifier.height(20.dp))
 //            CollapsibleSection(title = "Value of the fridge") {
 //            }
             TotalFridgeValue()
             Spacer(modifier = Modifier.height(16.dp))
-            CollapsibleSection(title = "Ingredients Expiring in 5 days") {
+            CollapsibleSection(title = "\uD83D\uDDD3\uFE0F Item(s) Expiring in 5 days") {
                 ExpiringIngredientsList()
             }
             Spacer(modifier = Modifier.height(16.dp))
-            CollapsibleSection(title = "Ingredients running low") {
+            CollapsibleSection(title = "\uD83D\uDCC9 Items Running Low") {
                 IngredientsRunningLow()
             }
             Spacer(modifier = Modifier.height(16.dp))
-            CollapsibleSection(title = "Money Spent on Grocery This Week") {
+            CollapsibleSection(title = "\uD83D\uDCB8 Grocery Spendings this Week") {
                 BarChartSection()
             }
             Spacer(modifier = Modifier.height(16.dp))

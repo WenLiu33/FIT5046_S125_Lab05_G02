@@ -407,7 +407,7 @@ fun EditIngredientDialog(
                     onClick = { onRemove(ingredient) },
                     modifier = Modifier.weight(1f),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFFFF7685),
+                        containerColor = Color(0xFFFFA3AB),
                         contentColor = Color.Black
                     )
                 ) {
@@ -417,6 +417,8 @@ fun EditIngredientDialog(
                 Button(
                     onClick = {
                         val updated = ingredient.copy(
+                            // not updating the originalQuantity as this is used for report calculations
+                            // instead it is updating the current quantity of the item
                             quantity = quantity.toIntOrNull() ?: ingredient.quantity,
                             unit = selectedUnit
                         )

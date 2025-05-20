@@ -1,6 +1,9 @@
-package com.example.fit5046a4
+package com.example.fit5046a4.loginScreen
 
+import android.app.Activity
 import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -32,11 +35,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -45,13 +49,16 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.fit5046a4.GoogleSignInUtils
+import com.example.fit5046a4.R
 
 @Composable
-fun LoginScreen() {
-
+fun LoginScreen(
+    onNavigateToMain: () -> Unit,
+    onNavigateToRegister: () -> Unit
+) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
@@ -172,7 +179,10 @@ fun LoginScreen() {
 
             // Login Button
             FilledTonalButton(
-                onClick = { Log.i("Credential", "Email: $email, Password: $password")},
+                onClick = {
+                    Log.i("Credential", "Email: $email, Password: $password")
+                    onNavigateToMain()
+                          },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),
@@ -191,13 +201,13 @@ fun LoginScreen() {
 
             Spacer(modifier = Modifier.height(24.dp)) // Increased spacing after divider
 
-            LoginGoogle()
+            LoginGoogle(onSuccess = onNavigateToMain)
 
             Spacer(modifier = Modifier.height(16.dp)) // Added bottom spacing
 
 
             TextButton(
-                onClick = { /* Navigate to registration screen */ },
+                onClick = onNavigateToRegister,
                 modifier = Modifier.padding(top = 16.dp)
             ) {
                 Text(
@@ -238,10 +248,35 @@ fun DividerWithText(text: String) {
 }
 
 @Composable
-fun LoginGoogle() {
+fun LoginGoogle(
+    onSuccess: () -> Unit
+) {
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+    val googleSignInLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) {
+            result ->
+        // Add this check:
+        if (result.resultCode == Activity.RESULT_OK) {
+            GoogleSignInUtils.doGoogleSignIn(
+                context = context,
+                scope = coroutineScope,
+                launcher = null,  // Prevent infinite loop
+                login = onSuccess
+            )
+        }
+    }
+
     Box() {
         ElevatedButton(
-            onClick = { },
+            onClick = {
+                GoogleSignInUtils.doGoogleSignIn(
+                context = context,
+                scope = coroutineScope,
+                launcher = googleSignInLauncher,
+                login = onSuccess
+            ) },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp),
@@ -271,3 +306,9 @@ fun LoginGoogle() {
         }
     }
 }
+
+//@Preview(showBackground = true)
+//@Composable
+//fun LoginPreview() {
+//    LoginScreen()
+//}
