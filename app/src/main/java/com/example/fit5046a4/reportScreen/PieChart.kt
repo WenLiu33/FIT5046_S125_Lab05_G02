@@ -2,6 +2,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.material3.TextFieldColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -18,6 +19,7 @@ import com.github.mikephil.charting.charts.PieChart
 import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
+import com.github.mikephil.charting.formatter.PercentFormatter
 import java.time.DayOfWeek
 import java.time.Instant
 import java.time.LocalDate
@@ -77,11 +79,25 @@ fun categoryFridgeValue (ingredients: List<Ingredient>): List<PieEntry>{
     return entries
 }
 
+
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun PieChartScreen(viewModel: IngredientViewModel = viewModel()) {
     // 1) Collect your full ingredient list
     val ingredients by viewModel.allIngredients.collectAsState(emptyList())
+
+    val dashboardColors = listOf(
+//        0xFF1F3A93.toInt(), // Navy
+        0xFF3A506B.toInt(), // Steel Blue
+        0xFF5BC0EB.toInt(), // Pastel Blue
+        0xFF9BC53D.toInt(), // Teal-Green
+        0xFFCBE32D.toInt(), // Lime
+        0xFFFDE74C.toInt(), // Mustard
+        0xFFFF5964.toInt(), // Coral
+        0xFFFF924C.toInt(), // Soft Orange
+        0xFFC65A97.toInt(), // Magenta
+        0xFFBC9CFF.toInt()  // Lavender
+    )
 
     // 2) Convert to PieEntry this week
     val pieEntries = remember(ingredients) {
@@ -91,16 +107,18 @@ fun PieChartScreen(viewModel: IngredientViewModel = viewModel()) {
 
     // 3) Build the chart just as you did before
     val pieDataSet = PieDataSet(pieEntries, "").apply {
-        colors = macaroonPastelPalette()
+        colors = dashboardColors
         valueTextSize = 14f
-        xValuePosition = PieDataSet.ValuePosition.INSIDE_SLICE
-        yValuePosition = PieDataSet.ValuePosition.INSIDE_SLICE
-        valueTextColor = Color.White.toArgb()
+        xValuePosition = PieDataSet.ValuePosition.OUTSIDE_SLICE
+        yValuePosition = PieDataSet.ValuePosition.OUTSIDE_SLICE
+        valueTextColor = Color.Black.toArgb()
+        valueLineColor = Color.Black.toArgb()
         setDrawValues(true)
-        sliceSpace = 2f
-//        valueFormatter = PercentValueFormatter() // if you like %
+        sliceSpace = 4f
+        valueFormatter = PercentFormatter() // if you like %
     }
     val pieData = PieData(pieDataSet)
+    pieData.setValueFormatter(PercentFormatter())
 
     AndroidView(
         modifier = Modifier
@@ -111,13 +129,17 @@ fun PieChartScreen(viewModel: IngredientViewModel = viewModel()) {
                 data = pieData
                 description.isEnabled = false
                 centerText = "Fridge"
-                setUsePercentValues(true)  // or true if you used PercentValueFormatter
-                setDrawEntryLabels(true)
+                setEntryLabelColor(Color.Black.toArgb())
+                setUsePercentValues(true)
+                setDrawEntryLabels(false)
                 animateY(800)
+                val percentFormatter = PercentFormatter(this)
+                data.setValueFormatter(percentFormatter)
             }
         },
         update = { chart ->
             chart.data = pieData
+            chart.data.setValueFormatter(PercentFormatter(chart))
             chart.invalidate()
         }
     )

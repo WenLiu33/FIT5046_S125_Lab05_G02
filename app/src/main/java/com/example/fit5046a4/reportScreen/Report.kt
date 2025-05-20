@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -151,9 +152,9 @@ fun ExpiringIngredientsList(viewModel: IngredientViewModel = viewModel()) {
     } else {
         Row(modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween){
-            Text("Item", modifier = Modifier.weight(1f))
-            Text("Quantity", modifier = Modifier.weight(0.4f))
-            Text("Expiry date")
+            Text("Item", modifier = Modifier.weight(1f), style = MaterialTheme.typography.titleMedium)
+            Text("Quantity", modifier = Modifier.weight(0.4f), style = MaterialTheme.typography.titleMedium)
+            Text("Expiry date", style = MaterialTheme.typography.titleMedium)
         }
         Spacer(modifier = Modifier.height(8.dp))
         LazyColumn(
@@ -202,8 +203,8 @@ fun IngredientsRunningLow(viewModel: IngredientViewModel = viewModel()) {
     } else {
         Row(modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween){
-            Text("Item", modifier = Modifier.weight(1f))
-            Text("Quantity", modifier = Modifier.weight(0.3f))
+            Text("Item", modifier = Modifier.weight(1f), style = MaterialTheme.typography.titleMedium)
+            Text("Quantity", modifier = Modifier.weight(0.3f), style = MaterialTheme.typography.titleMedium)
         }
         Spacer(modifier = Modifier.height(8.dp))
         LazyColumn(
