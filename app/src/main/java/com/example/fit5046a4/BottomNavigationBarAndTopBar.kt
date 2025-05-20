@@ -29,6 +29,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.fit5046a4.loginScreen.LoginScreen
+import com.example.fit5046a4.loginScreen.loginScreen
+import com.example.fit5046a4.registerScreen.RegisterScreen
+import com.example.fit5046a4.registerScreen.navigateToRegister
 import com.example.fit5046a4.reportScreen.Report
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -70,7 +74,7 @@ fun BottomNavigationBarAndTopBar() {
                 ),
                 actions = {
                     IconButton(onClick = {
-                        navController.navigate("register"){
+                        navController.navigate("login"){
                             popUpTo(navController.graph.startDestinationId){
                                 inclusive = true
                             }
@@ -133,7 +137,12 @@ fun BottomNavigationBarAndTopBar() {
                 //It is not part of the bottom navigation bar used for internal flow only, triggered from the Fridge screen.
                 AddIngredientScreen(navController)
             }
-            composable("register"){ RegisterScreen() }
+            composable("login") {
+                loginScreen(
+                    onNavigateToMain = { navController.navigate("MainApp") },
+                    onNavigateToRegister = { navController.navigateToRegister() }
+                )
+            }
         }
     }
 }
