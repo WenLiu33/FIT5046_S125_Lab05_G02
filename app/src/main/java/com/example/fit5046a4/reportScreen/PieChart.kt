@@ -27,67 +27,50 @@ import java.time.ZoneId
 import java.time.temporal.TemporalAdjusters
 
 /**
- * Returns one PieEntry per category, summing
- * all inserts in the current Sunday→Saturday week.
+ * Calculate category-wise totals and bucket small ones into "Others".
+ * @param ingredients list of all fridge items
+ * @return list of PieEntry(label: category, value: total)
  */
-@RequiresApi(Build.VERSION_CODES.O)
-fun categorySpendThisWeek(ingredients: List<Ingredient>): List<PieEntry> {
-    // 1) Anchor to this week’s Sunday
-    val sunday = LocalDate.now()
-        .with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY))
-    val saturday = sunday.plusDays(6)
-
-    // 2) Filter to just those inserted this week
-    val thisWeek = ingredients.filter { ing ->
-        val date = Instant.ofEpochMilli(ing.insertDate.time)
-            .atZone(ZoneId.systemDefault())
-            .toLocalDate()
-        // keep if sunday ≤ date ≤ saturday
-        !date.isBefore(sunday) && !date.isAfter(saturday)
-    }
-
-    // 3) Group by category and sum each
-    val sumsByCategory: Map<String, Float> = thisWeek
+fun categoryFridgeValue(ingredients: List<Ingredient>): List<PieEntry> {
+    // Group by category and sum value (quantity * price)
+    val sums: Map<String, Float> = ingredients
         .groupBy { it.category }
         .mapValues { (_, group) ->
             group.sumOf { it.quantity * it.unitPrice.toDouble() }.toFloat()
         }
 
-    // 4) Build PieEntry list
-    return sumsByCategory.map { (category, total) ->
-        PieEntry(total, category)
-    }
-}
+    // Grand total across all categories
+    val fridgeTotal: Float = sums.values.sum()
 
-fun categoryFridgeValue (ingredients: List<Ingredient>): List<PieEntry>{
-    val sums = ingredients.groupBy { it.category }.mapValues { (_, group) ->
-        group.sumOf{it.quantity* it.unitPrice.toDouble()}.toFloat() }
-    val fridgeTotal = sums.values.sum()
+    // Partition into major (>=5%) vs minor (<5%) categories
+    val (major, minor) = sums.entries.partition { it.value / fridgeTotal >= 0.05f }
 
-    val (major, minor) = sums.entries.partition { it.value / fridgeTotal >=0.05f }
-
-    val entries = mutableListOf<PieEntry>().apply {
-        major.forEach{ (cat, total) ->
+    // Build final PieEntry list, merging minor into "Others"
+    return mutableListOf<PieEntry>().apply {
+        // Add each major category as its own slice
+        major.forEach { (cat, total) ->
             add(PieEntry(total, cat))
         }
-        val otherTotal = minor.sumOf{ it.value.toDouble()}.toFloat()
-        if (otherTotal>0f){
+        // Sum up all minor categories and add one "Others" slice
+        val otherTotal = minor.sumOf { it.value.toDouble() }.toFloat()
+        if (otherTotal > 0f) {
             add(PieEntry(otherTotal, "Others"))
         }
     }
-
-    return entries
 }
 
-
+/**
+ * Renders a PieChart showing fridge value breakdown by category.
+ * Buckets small categories into "Others", shows percentages.
+ */
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun PieChartScreen(viewModel: IngredientViewModel = viewModel()) {
-    // 1) Collect your full ingredient list
+    // 1) Observe ingredient list from ViewModel
     val ingredients by viewModel.allIngredients.collectAsState(emptyList())
 
+    // 2) Prepare 9-color dashboard palette
     val dashboardColors = listOf(
-//        0xFF1F3A93.toInt(), // Navy
         0xFF3A506B.toInt(), // Steel Blue
         0xFF5BC0EB.toInt(), // Pastel Blue
         0xFF9BC53D.toInt(), // Teal-Green
@@ -99,27 +82,31 @@ fun PieChartScreen(viewModel: IngredientViewModel = viewModel()) {
         0xFFBC9CFF.toInt()  // Lavender
     )
 
-    // 2) Convert to PieEntry this week
+    // 3) Compute pie entries once when data changes
     val pieEntries = remember(ingredients) {
-//        categorySpendThisWeek(ingredients)
         categoryFridgeValue(ingredients)
     }
 
-    // 3) Build the chart just as you did before
+    // 4) Build the PieDataSet with styling
     val pieDataSet = PieDataSet(pieEntries, "").apply {
-        colors = dashboardColors
-        valueTextSize = 14f
-        xValuePosition = PieDataSet.ValuePosition.OUTSIDE_SLICE
+        colors = dashboardColors               // custom slice colors
+        valueTextSize = 14f                    // label font size
+        xValuePosition = PieDataSet.ValuePosition.OUTSIDE_SLICE // draw percent outside
         yValuePosition = PieDataSet.ValuePosition.OUTSIDE_SLICE
-        valueTextColor = Color.Black.toArgb()
-        valueLineColor = Color.Black.toArgb()
-        setDrawValues(true)
-        sliceSpace = 4f
-        valueFormatter = PercentFormatter() // if you like %
+        valueTextColor = Color.Black.toArgb() // percent label color
+        valueLineColor = Color.Black.toArgb() // connecting line color
+        sliceSpace = 4f                        // gap between slices
+        setDrawValues(true)                    // draw percent values
+        // format values as percent of total
+        valueFormatter = PercentFormatter()
     }
-    val pieData = PieData(pieDataSet)
-    pieData.setValueFormatter(PercentFormatter())
 
+    // 5) Wrap dataset in PieData and re-apply percent formatter
+    val pieData = PieData(pieDataSet).also {
+        it.setValueFormatter(PercentFormatter())
+    }
+
+    // 6) Embed the Android PieChart view in Compose
     AndroidView(
         modifier = Modifier
             .fillMaxWidth()
@@ -129,19 +116,20 @@ fun PieChartScreen(viewModel: IngredientViewModel = viewModel()) {
                 data = pieData
                 description.isEnabled = false
                 centerText = "Fridge"
-                setEntryLabelColor(Color.Black.toArgb())
                 setUsePercentValues(true)
+                setEntryLabelColor(Color.Black.toArgb()) // hide slice text
                 setDrawEntryLabels(false)
                 animateY(800)
-                val percentFormatter = PercentFormatter(this)
-                data.setValueFormatter(percentFormatter)
+                // set formatter with chart reference
+                val pf = PercentFormatter(this)
+                this.data.setValueFormatter(pf)
             }
         },
         update = { chart ->
+            // on recomposition, update data and formatter
             chart.data = pieData
             chart.data.setValueFormatter(PercentFormatter(chart))
-            chart.invalidate()
+            chart.invalidate() // redraw
         }
     )
 }
-

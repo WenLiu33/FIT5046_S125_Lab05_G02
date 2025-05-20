@@ -27,17 +27,20 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.temporal.TemporalAdjusters
-
+/**
+ * Generate a pastel palette by lightening the theme’s primary color.
+ * Returns seven pastel variants for chart coloring.
+ */
 @Composable
 fun macaroonPastelPalette(): List<Int> {
-    // 1. Grab your base primary color as an ARGB Int
+    // 1. Get ARGB of current Material primary color
     val baseColor = MaterialTheme.colorScheme.primary.toArgb()
 
-    // 2. Convert to HSL
+    // 2. Convert that color to HSL for hue/lightness manipulation
     val hsl = FloatArray(3)
     ColorUtils.colorToHSL(baseColor, hsl)
 
-    // 3. Generate seven variants from 30% → 90% lightness
+    // 3. Create seven shades from dark (30% lightness) to very light (90%)
     val lightnessSteps = listOf(0.30f, 0.40f, 0.50f, 0.60f, 0.70f, 0.80f, 0.90f)
     return lightnessSteps.map { light ->
         hsl[2] = light
@@ -45,20 +48,26 @@ fun macaroonPastelPalette(): List<Int> {
     }
 }
 
+/**
+ * Compute total spend per day for the current week (Sunday → Saturday).
+ * Returns a List<Float> of length 7, index 0 = Sunday, ..., 6 = Saturday.
+ */
 @RequiresApi(Build.VERSION_CODES.O)
 fun weeklySpendSundayToSaturday(ingredients: List<Ingredient>): List<Float> {
-    // 1) Anchor to the Sunday of the current week
+    // Find the most recent Sunday (or today if it's Sunday)
     val sunday = LocalDate.now()
         .with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY))
 
-    // 2) Build a list of the seven dates
+    // Build the list of the seven dates of this week
     val weekDays = (0L..6L).map { sunday.plusDays(it) }
 
-    // 3) For each date, sum up expense
+    // For each date, filter ingredients whose insertDate matches,
+    // then sum quantity * price
     return weekDays.map { date ->
         ingredients
             .asSequence()
             .filter { ing ->
+                // convert java.util.Date → LocalDate for comparison
                 Instant.ofEpochMilli(ing.insertDate.time)
                     .atZone(ZoneId.systemDefault())
                     .toLocalDate() == date
@@ -68,70 +77,83 @@ fun weeklySpendSundayToSaturday(ingredients: List<Ingredient>): List<Float> {
     }
 }
 
+/**
+ * Composable that renders the bar chart of weekly spend.
+ * Disables zoom and customizes the legend and axes.
+ */
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun BarChartScreen(viewModel: IngredientViewModel = viewModel()) {
-    val ingredients by viewModel.allIngredients.collectAsState(
-        initial = emptyList())
+    // Collect full ingredient list from ViewModel
+    val ingredients by viewModel.allIngredients.collectAsState(initial = emptyList())
+
+    // Compute a 7-element list of floats (one per weekday)
     val spendByDay = weeklySpendSundayToSaturday(ingredients)
 
+    // Map each nonzero day to a BarEntry—days with zero still get an entry at height 0
     val barEntries: List<BarEntry> = spendByDay
-        .mapIndexedNotNull { index, amount ->
-            if (amount > 0f) {
-                BarEntry(index.toFloat(), amount)
-            } else {
-                BarEntry(index.toFloat(), 0f)
-            }
+        .mapIndexed { index, amount ->
+            BarEntry(index.toFloat(), amount)
         }
 
+    // Create a BarDataSet with a label and our pastel colors
     val barDataSet = BarDataSet(barEntries, "(AUD)").apply {
-        colors = macaroonPastelPalette()
-        setDrawValues(true)
+        colors = macaroonPastelPalette() // pastel bar fill
+        setDrawValues(true)              // show values above bars
     }
-    barDataSet.colors = macaroonPastelPalette()
+
+    // Wrap dataset in BarData and define bar width
     val barData = BarData(barDataSet).apply {
         barWidth = 0.8f
     }
+
+    // Host the Android BarChart inside Compose
     AndroidView(
         modifier = Modifier
             .fillMaxWidth()
-            .height(200.dp),
+            .height(200.dp),    // fixed height for consistency
         factory = { ctx ->
             BarChart(ctx).apply {
                 data = barData
-                description.isEnabled = false
-                setFitBars(true)
+                description.isEnabled = false  // hide bottom-right description
+
+                setFitBars(true)              // make bars fit nicely
+
+                // Configure legend to show only text, left-aligned at bottom
                 legend.apply {
-                    form = Legend.LegendForm.NONE
-                    formSize = 0f
+                    form = Legend.LegendForm.NONE    // no color box
+                    formSize = 0f                    // collapse form space
                     formToTextSpace = 0f
                     horizontalAlignment = Legend.LegendHorizontalAlignment.LEFT
-                    verticalAlignment = Legend.LegendVerticalAlignment.BOTTOM
-                    orientation = Legend.LegendOrientation.HORIZONTAL
-                    textSize = 11f
-                    isWordWrapEnabled = true
-                    setDrawInside(false)
+                    verticalAlignment   = Legend.LegendVerticalAlignment.BOTTOM
+                    orientation         = Legend.LegendOrientation.HORIZONTAL
+                    textSize            = 11f
+                    isWordWrapEnabled   = true
+                    setDrawInside(false)             // draw outside chart area
                 }
+
+                // X-axis labels for days of week
                 xAxis.position = XAxis.XAxisPosition.BOTTOM
                 xAxis.valueFormatter =
                     IndexAxisValueFormatter(listOf("Sun","Mon","Tues","Wed","Thurs","Fri","Sat"))
-                animateY(400)
+
+                animateY(400)                   // animate bars vertically
+                // Disable all user zoom interactions:
                 setScaleEnabled(false)
                 setPinchZoom(false)
                 setDoubleTapToZoomEnabled(false)
             }
         },
         update = { chart ->
+            // On recomposition, update data without recreating chart
             chart.data = barData
-//            chart.invalidate()
+            // chart.invalidate() // optional: force redraw
         }
     )
 }
 
-//@Preview(showBackground = true)
-//@Composable
-//fun BarPreview(){
-//    FIT5046A4Theme {
-//        BarChartScreen()
-//    }
-//}
+
+
+
+
+
