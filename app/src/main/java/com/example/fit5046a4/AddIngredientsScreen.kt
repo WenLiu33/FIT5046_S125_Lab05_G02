@@ -1,5 +1,6 @@
 package com.example.fit5046a4
 
+// Core Android and Jetpack Compose Elements
 import android.graphics.Paint.Align
 import android.os.Build
 import android.widget.Toast
@@ -84,19 +85,20 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
-
 //*******FUNCTIONS BELOW********
 
-//This function is the field inputs for adding ingredients
-//This will be inserted into existing database
-//After adding the ingredient or cancelling, it will automatically redirect to Fridge Screen
-
+/**
+ * This is a Composable that allows the user to add a new ingredient to the fridge.
+ * It includes input fields for name, quantity, unit, price, category, and expiry date.
+ * On submission, it validates the inputs, constructs an Ingredient object, and inserts it into the database.
+ * Navigates back to the fridge screen after successful addition or cancellation.
+ */
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddIngredientsToDB(viewModel: IngredientViewModel, navController: NavController) {
 
-    //rememberSaveable so even if user accidentally taps into another screen the inputs are still there
+    // Form state stored using rememberSaveable to preserve values on recomposition/navigation
     var name by rememberSaveable { mutableStateOf("") }
     var quantity by rememberSaveable { mutableStateOf("") }
     var unit by rememberSaveable { mutableStateOf("") }
@@ -120,7 +122,9 @@ fun AddIngredientsToDB(viewModel: IngredientViewModel, navController: NavControl
             },
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-        Text("Item:", fontSize = 16.sp, fontWeight = FontWeight.Medium)
+
+        //Item name field
+        Text("\uD83D\uDED2 Item:", fontSize = 16.sp, fontWeight = FontWeight.Medium)
         TextField(
             value = name,
             onValueChange = { name = it },
@@ -137,10 +141,9 @@ fun AddIngredientsToDB(viewModel: IngredientViewModel, navController: NavControl
             )
         )
 
+        // Quantity and Unit
         //Accepts input from a numerical keyboard only
-        //To enable on emulator, go to settings, disable stylus input
-        //and enable on screen keyboard
-        Text("Quantity & Unit:", fontSize = 15.sp, fontWeight = FontWeight.Medium)
+        Text("⚖\uFE0F Quantity & Unit:", fontSize = 15.sp, fontWeight = FontWeight.Medium)
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -166,17 +169,17 @@ fun AddIngredientsToDB(viewModel: IngredientViewModel, navController: NavControl
                 )
 
             )
-
+            // Call UnitDropDown for custom inputs
             UnitDropDown(
                 selectedUnit = unit,
                 onUnitSelected = { unit = it },
                 modifier = Modifier.weight(1f)
             )
         }
+
+        //Item price and category field side by side
         //Accepts input from a numerical keyboard only
-        //To enable on emulator, go to settings, disable stylus input
-        //and enable on screen keyboard
-        Text("Item Price & Category:", fontSize = 15.sp, fontWeight = FontWeight.Medium)
+        Text("\uD83C\uDFF7\uFE0F Item Price & Category:", fontSize = 15.sp, fontWeight = FontWeight.Medium)
         Row(
             modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
@@ -201,16 +204,16 @@ fun AddIngredientsToDB(viewModel: IngredientViewModel, navController: NavControl
                 )
             )
 
+            //Category() drop down for selection
             CategoryDropDown(
                 selectedCategory = category,
                 onCategorySelected = { category = it },
                 modifier = Modifier.weight((1f))
             )
-
         }
 
         Text(
-            "Expiry Date:",
+            "\uD83D\uDCC5 Expiry Date:",
             modifier = Modifier.padding(top = 4.dp),
             fontSize = 15.sp,
             fontWeight = FontWeight.Medium
@@ -327,38 +330,18 @@ fun AddIngredientsToDB(viewModel: IngredientViewModel, navController: NavControl
 
 }
 
-//This function is the Screen when user clicks 'Add Ingredients'
-// It is navigated to from the Fridge screen when the user clicks "Add Ingredient".
-// The navController parameter is passed in to allow navigation actions.
+/**This Composable function is the Screen layout when user clicks 'Add Ingredients'
+It is navigated to from the Fridge screen when the user clicks "Add Ingredient".
+The navController parameter is passed in to allow navigation actions.*/
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddIngredientScreen(navController: NavController) {
-    //TEMPORARY COMMENT OUT: currently using BottomNavigationBarAndTopBar scaffold
-    //Layout of the screen with grocery image
-//    Scaffold(
-//        topBar = {
-//            TopAppBar(
-//                title = {
-//                    Box(
-//                        modifier = Modifier
-//                            .fillMaxWidth(),
-//                        contentAlignment = Alignment.Center
-//                    ) {
-//                        Text(text = "Add Ingredients")
-//                    }
-//                },
-//                colors = TopAppBarDefaults.topAppBarColors(
-//                    containerColor = Color(0xFFD7DEFB),
-//                    titleContentColor = MaterialTheme.colorScheme.primary,
-//                )
-//            )
-//        }
-//    ) { innerPadding ->
+
+    // LazyColumn ensures the content is scrollable if screen height is limited
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            //.padding(innerPadding)
             .padding(horizontal = 24.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -374,6 +357,8 @@ fun AddIngredientScreen(navController: NavController) {
                 modifier = Modifier.size(150.dp)
             )
         }
+
+        // main form that handles ingredient input and database insertion
         item {
             AddIngredientsToDB(viewModel = viewModel(), navController = navController)
         }
@@ -381,8 +366,14 @@ fun AddIngredientScreen(navController: NavController) {
 
 }
 
-//This function will have unit as a drop down menu
-//This will be called into the AddIngredientsToDB() function
+/**
+ * This composable is dropdown menu for selecting the unit of measurement for an ingredient.
+ * Called within the AddIngredientsToDB form.
+ *
+ * @param selectedUnit The currently selected unit.
+ * @param onUnitSelected Callback when the user selects a unit.
+ * @param modifier Optional Modifier for layout.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UnitDropDown(
@@ -390,9 +381,11 @@ fun UnitDropDown(
     onUnitSelected: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    // unit options
     val unitOptions = listOf("g", "kg", "ml", "L", "pc(s)", "cup(s)")
     var isExpanded by remember { mutableStateOf(false) }
 
+    // drop down container
     ExposedDropdownMenuBox(
         expanded = isExpanded,
         onExpandedChange = { isExpanded = it },
@@ -409,14 +402,14 @@ fun UnitDropDown(
             onValueChange = {},
             label = { Text("select unit", fontSize = 14.sp) },
 
-            ////When user clicks on the textfield, it changes colour to indicate click
+            //When user clicks on the textfield, it changes colour to indicate click
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = Color(0xFFD7DEFB).copy(alpha = 0.6f),
                 unfocusedContainerColor = Color(0xFFD7DEFB).copy(alpha = 0.2f)
 
             ),
 
-            //manages the arrow icon up and down
+            // manages the arrow icon up and down
             trailingIcon = {
                 ExposedDropdownMenuDefaults.TrailingIcon(expanded = isExpanded)
             },
@@ -424,6 +417,8 @@ fun UnitDropDown(
             shape = RoundedCornerShape(10.dp)
 
         )
+
+        // menu item list
         ExposedDropdownMenu(
             expanded = isExpanded,
             onDismissRequest = { isExpanded = false }
@@ -442,10 +437,13 @@ fun UnitDropDown(
     }
 }
 
-//This function will be the date picker for expiry date
-//This will be called into the AddIngredientsToDB() function
-//Week3 lab content
-//Parameter logic similar to @UnitDropDown function
+/**
+ * This composable is a date picker field that allows the user to select an expiry date.
+ * Shows a calendar dialog and displays the selected date in a text field.
+ *
+ * @param expiryDate The current expiry date in string format (for display).
+ * @param onDateSelected Callback with the formatted date string when the user picks a date.
+ */
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -463,6 +461,7 @@ fun ExpiryDatePickerField(
     var showDatePicker by remember { mutableStateOf(false) }
     var selectedDate by remember { mutableLongStateOf(calendar.timeInMillis) }
 
+    // display field for selected expiry date and opens calendar on click
     TextField(
         value = expiryDate,
         onValueChange = {},
@@ -488,6 +487,7 @@ fun ExpiryDatePickerField(
         }
     )
 
+    // calendar pop-up for selecting expiry date
     if (showDatePicker) {
         DatePickerDialog(
             onDismissRequest = {
@@ -497,6 +497,7 @@ fun ExpiryDatePickerField(
                 TextButton(onClick = {
                     showDatePicker = false
                     selectedDate = datePickerState.selectedDateMillis ?: calendar.timeInMillis
+                    //returns formatted date string
                     onDateSelected("Expiry: ${formatter.format(Date(selectedDate))}")
                 }) {
                     Text("OK")
@@ -516,8 +517,14 @@ fun ExpiryDatePickerField(
     }
 }
 
-//This function will have category as drop down menu
-//This will be called into the AddIngredientsToDB() function
+/**
+ * This composable is the dropdown menu for selecting a grocery category.
+ * Called within the AddIngredientsToDB form.
+ *
+ * @param selectedCategory The currently selected category.
+ * @param onCategorySelected Callback when a new category is selected.
+ * @param modifier Optional Modifier for layout usage.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CategoryDropDown(
@@ -526,6 +533,7 @@ fun CategoryDropDown(
     modifier: Modifier = Modifier
 
 ) {
+    // pre-defined grocery categories
     val categoryOptions =
         listOf("Fruit", "Vegetables", "Proteins", "Dairy", "Grains", "Condiments", "Frozen goods")
     var isExpanded by remember { mutableStateOf(false) }
@@ -560,6 +568,8 @@ fun CategoryDropDown(
             shape = RoundedCornerShape(10.dp)
 
         )
+
+        // category dropdown items
         ExposedDropdownMenu(
             expanded = isExpanded,
             onDismissRequest = { isExpanded = false }
@@ -577,9 +587,3 @@ fun CategoryDropDown(
         }
     }
 }
-//@Preview(showBackground = true)
-//@Composable
-//fun AddIngredientsPreview() {
-//    AddIngredientScreen()
-//}
-//
