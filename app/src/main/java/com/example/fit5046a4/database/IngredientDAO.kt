@@ -30,4 +30,7 @@ interface IngredientDAO {
     @Query("SELECT * FROM ingredient")
     suspend fun getAllIngredientsOnce(): List<Ingredient>
 
+    @Query("DELETE FROM ingredient")
+    suspend fun deleteAllIngredients()
+    
 }

@@ -27,4 +27,11 @@ class IngredientViewModel(application: Application) : AndroidViewModel(applicati
     fun deleteIngredient(ingredient: Ingredient) = viewModelScope.launch(Dispatchers.IO){
         cRepository.delete(ingredient)
     }
+
+    fun clearAllIngredients() {
+        viewModelScope.launch {
+            cRepository.deleteAllIngredients()
+        }
+    }
+
 }
