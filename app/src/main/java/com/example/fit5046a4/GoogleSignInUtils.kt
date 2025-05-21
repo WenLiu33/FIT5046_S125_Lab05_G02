@@ -39,16 +39,19 @@ class GoogleSignInUtils {
                 .build()
             scope.launch {
                 try {
-                    Log.d("GoogleAuth", "Attempting CredentialManager flow")
                     val result = credentialManager.getCredential(context,request)
                     when(result.credential){
                         is CustomCredential ->{
-                            Log.d("GoogleAuth", "Received Google ID token")
                             if(result.credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL){
                                 val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(result.credential.data)
                                 val googleTokenId = googleIdTokenCredential.idToken
                                 val authCredential = GoogleAuthProvider.getCredential(googleTokenId,null)
-                                val user = Firebase.auth.signInWithCredential(authCredential).await().user
+                                val user = try {
+                                    Firebase.auth.signInWithCredential(authCredential).await().user
+                                } catch (e: Exception) {
+                                    Log.e("GoogleAuth", "Firebase login failed", e)
+                                    null
+                                }
                                 user?.let {
                                     if(it.isAnonymous.not()){
                                         login.invoke()
@@ -60,13 +63,15 @@ class GoogleSignInUtils {
                     }
                 }catch (e:NoCredentialException){
                     Log.e("GoogleAuth", "Error: ${e.javaClass.simpleName}", e)
-                    // Only launch account picker if NO accounts exist
+
                     if (isGoogleAccountAvailable(context)) {
-                        // Accounts exist but weren't detected - retry CredentialManager
-                        doGoogleSignIn(context, scope, null, login)
+                        // Retry only once to avoid infinite loop
+                        launcher?.launch(getIntent())
                     } else {
                         launcher?.launch(getIntent())
                     }
+
+
                 }catch (e:GetCredentialException){
                     e.printStackTrace()
                 }
@@ -88,7 +93,7 @@ class GoogleSignInUtils {
         private fun getCredentialOptions(context: Context):CredentialOption{
             return GetGoogleIdOption.Builder()
                 .setFilterByAuthorizedAccounts(false)
-                .setAutoSelectEnabled(true)
+                .setAutoSelectEnabled(false)
                 .setServerClientId(context.getString(R.string.web_client_id))
                 .build()
         }

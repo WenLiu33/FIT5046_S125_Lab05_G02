@@ -39,7 +39,6 @@ import com.google.firebase.auth.auth
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview(showBackground = true)
 @Composable
 fun BottomNavigationBarAndTopBar(onLogout: () -> Unit) {
     val navRoutes = listOf(
