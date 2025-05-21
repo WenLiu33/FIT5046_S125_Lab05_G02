@@ -48,7 +48,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.fit5046a4.AppUtil
-import com.example.fit5046a4.AuthViewModel
+import com.example.fit5046a4.firebaseAuth.AuthViewModel
 import com.example.fit5046a4.R
 import com.example.fit5046a4.loginScreen.DividerWithText
 

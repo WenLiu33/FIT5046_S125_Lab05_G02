@@ -1,4 +1,4 @@
-package com.example.fit5046a4
+package com.example.fit5046a4.firebaseAuth
 
 import android.accounts.AccountManager
 import android.content.Context
@@ -13,6 +13,7 @@ import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
 import androidx.credentials.exceptions.GetCredentialException
 import androidx.credentials.exceptions.NoCredentialException
+import com.example.fit5046a4.R
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.firebase.Firebase
@@ -21,7 +22,6 @@ import com.google.firebase.auth.auth
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
-
 
 class GoogleSignInUtils {
 
@@ -32,7 +32,7 @@ class GoogleSignInUtils {
             launcher: ManagedActivityResultLauncher<Intent, ActivityResult>?,
             login: () -> Unit
         ) {
-            val credentialManager = CredentialManager.create(context)
+            val credentialManager = CredentialManager.Companion.create(context)
 
             val request = GetCredentialRequest.Builder()
                 .addCredentialOption(getCredentialOptions(context))
@@ -42,8 +42,8 @@ class GoogleSignInUtils {
                     val result = credentialManager.getCredential(context,request)
                     when(result.credential){
                         is CustomCredential ->{
-                            if(result.credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL){
-                                val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(result.credential.data)
+                            if(result.credential.type == GoogleIdTokenCredential.Companion.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL){
+                                val googleIdTokenCredential = GoogleIdTokenCredential.Companion.createFrom(result.credential.data)
                                 val googleTokenId = googleIdTokenCredential.idToken
                                 val authCredential = GoogleAuthProvider.getCredential(googleTokenId,null)
                                 val user = try {
@@ -61,7 +61,7 @@ class GoogleSignInUtils {
                         }
                         else -> Log.w("GoogleAuth", "Unexpected credential type")
                     }
-                }catch (e:NoCredentialException){
+                }catch (e: NoCredentialException){
                     Log.e("GoogleAuth", "Error: ${e.javaClass.simpleName}", e)
 
                     if (isGoogleAccountAvailable(context)) {
@@ -72,7 +72,7 @@ class GoogleSignInUtils {
                     }
 
 
-                }catch (e:GetCredentialException){
+                }catch (e: GetCredentialException){
                     e.printStackTrace()
                 }
             }
@@ -83,14 +83,14 @@ class GoogleSignInUtils {
             return accountManager.getAccountsByType("com.google").isNotEmpty()
         }
 
-        private fun getIntent():Intent{
+        private fun getIntent(): Intent {
             return Intent(Settings.ACTION_ADD_ACCOUNT).apply {
                 putExtra(Settings.EXTRA_ACCOUNT_TYPES, arrayOf("com.google"))
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK
             }
         }
 
-        private fun getCredentialOptions(context: Context):CredentialOption{
+        private fun getCredentialOptions(context: Context): CredentialOption {
             return GetGoogleIdOption.Builder()
                 .setFilterByAuthorizedAccounts(false)
                 .setAutoSelectEnabled(false)

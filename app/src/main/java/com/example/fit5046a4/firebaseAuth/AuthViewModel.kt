@@ -1,4 +1,4 @@
-package com.example.fit5046a4
+package com.example.fit5046a4.firebaseAuth
 
 import androidx.lifecycle.ViewModel
 import com.example.fit5046a4.database.UserModel
@@ -29,7 +29,7 @@ class AuthViewModel : ViewModel(){
                 if(it.isSuccessful){
                     var userID = it.result?.user?.uid
 
-                    val userModel = UserModel(email,userID!!)
+                    val userModel = UserModel(email, userID!!)
                     firestore.collection("users").document(userID)
                         .set(userModel)
                         .addOnCompleteListener { dbTask->
