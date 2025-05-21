@@ -271,12 +271,11 @@ fun LoginGoogle(
         contract = ActivityResultContracts.StartActivityForResult()
     ) {
             result ->
-        // Add this check:
         if (result.resultCode == Activity.RESULT_OK) {
             GoogleSignInUtils.doGoogleSignIn(
                 context = context,
                 scope = coroutineScope,
-                launcher = null,  // Prevent infinite loop
+                launcher = null,
                 login = onSuccess
             )
         }
@@ -312,7 +311,7 @@ fun LoginGoogle(
                 )
                 Spacer(Modifier.width(12.dp))
                 Text(
-                    text = "Login with Google",
+                    text = "Continue with Google",
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Medium
                 )
