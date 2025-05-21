@@ -44,6 +44,7 @@ android {
 dependencies {
     implementation(libs.mpandroidchart)
     implementation(libs.androidx.runtime.livedata)
+    implementation(libs.firebase.firestore)
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)

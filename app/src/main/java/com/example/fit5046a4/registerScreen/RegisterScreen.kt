@@ -35,6 +35,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -45,13 +46,17 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.fit5046a4.AppUtil
+import com.example.fit5046a4.AuthViewModel
 import com.example.fit5046a4.R
 import com.example.fit5046a4.loginScreen.DividerWithText
 
 @Composable
 fun RegisterScreen(
     onNavigateToMain: () -> Unit,
-    onNavigateToLogin: () -> Unit
+    onNavigateToLogin: () -> Unit,
+    authViewModel: AuthViewModel = viewModel()
 ) {
 
     var email by remember { mutableStateOf("") }
@@ -59,7 +64,7 @@ fun RegisterScreen(
     var passwordVisible by remember { mutableStateOf(false) }
     var isTermsAccepted by remember { mutableStateOf(false) }
 
-
+    var context = LocalContext.current
 
     Box(
         modifier = Modifier
@@ -206,9 +211,17 @@ fun RegisterScreen(
                 modifier = Modifier.padding(vertical = 16.dp)
             )
 
-            // Register Button
+            // Register Button //onClick = onNavigateToMain,
             FilledTonalButton(
-                onClick = onNavigateToMain,
+                onClick = {
+                    authViewModel.register(email, password) {success, errorMessage ->
+                        if(success) {
+                            onNavigateToMain()
+                        }else{
+                            AppUtil.showToast(context, errorMessage?:"Something went wrong")
+                        }
+                    }
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),

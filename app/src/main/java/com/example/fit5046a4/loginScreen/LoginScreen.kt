@@ -51,17 +51,22 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.fit5046a4.AppUtil
+import com.example.fit5046a4.AuthViewModel
 import com.example.fit5046a4.GoogleSignInUtils
 import com.example.fit5046a4.R
 
 @Composable
 fun LoginScreen(
     onNavigateToMain: () -> Unit,
-    onNavigateToRegister: () -> Unit
+    onNavigateToRegister: () -> Unit,
+    authViewModel: AuthViewModel = viewModel()
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
+    var context = LocalContext.current
 
     Box(
         modifier = Modifier
@@ -180,9 +185,18 @@ fun LoginScreen(
             // Login Button
             FilledTonalButton(
                 onClick = {
-                    Log.i("Credential", "Email: $email, Password: $password")
-                    onNavigateToMain()
-                          },
+                    authViewModel.login(email, password) {success, errorMessage ->
+                        if(success) {
+                            onNavigateToMain()
+                        }else{
+                            AppUtil.showToast(context, errorMessage?:"Something went wrong")
+                        }
+                    }
+                },
+//                onClick = {
+//                    Log.i("Credential", "Email: $email, Password: $password")
+//                    onNavigateToMain()
+//                          },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),
