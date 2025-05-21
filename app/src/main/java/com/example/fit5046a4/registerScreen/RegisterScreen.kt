@@ -14,6 +14,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -114,15 +115,26 @@ fun RegisterScreen(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 LabelWithAsterisk("Password")
-                PasswordInputField(password, passwordVisible, { password = it }, { passwordVisible = it })
+                PasswordInputField(
+                    password,
+                    passwordVisible,
+                    { password = it },
+                    { passwordVisible = it }
+                )
 
                 Spacer(modifier = Modifier.height(16.dp))
 
                 LabelWithAsterisk("Confirm Password")
-                PasswordInputField(confirmPassword, passwordVisible, { confirmPassword = it }, { passwordVisible = it })
+                ConfirmPasswordInputField(
+                    confirmPassword = confirmPassword,
+                    password = password,
+                    visible = passwordVisible,
+                    onValueChange = { confirmPassword = it },
+                    onToggleVisibility = { passwordVisible = it }
+                )
+
 
             }
-
 
             TermsCheckbox(
                 checked = isTermsAccepted,
@@ -130,9 +142,26 @@ fun RegisterScreen(
                 modifier = Modifier.padding(vertical = 16.dp)
             )
 
-            // Register Button //onClick = onNavigateToMain,
             FilledTonalButton(
                 onClick = {
+                    val passwordRules = validatePassword(password)
+                    val isPasswordValid = passwordRules.all { it.isValid }
+
+                    if (!isPasswordValid) {
+                        AppUtil.showToast(context, "Password does not meet the required rules")
+                        return@FilledTonalButton
+                    }
+
+                    if (password != confirmPassword) {
+                        AppUtil.showToast(context, "Passwords do not match")
+                        return@FilledTonalButton
+                    }
+
+                    if (!isTermsAccepted) {
+                        AppUtil.showToast(context, "Please accept the Terms of Service")
+                        return@FilledTonalButton
+                    }
+
                     authViewModel.register(email, password) {success, errorMessage ->
                         if(success) {
                             onNavigateToMain()
@@ -188,6 +217,19 @@ fun RegisterScreen(
     }
 }
 
+data class PasswordRule(val description: String, val isValid: Boolean)
+
+fun validatePassword(password: String): List<PasswordRule> {
+    return listOf(
+        PasswordRule("At least 8 characters", password.length >= 8),
+        PasswordRule("At least one uppercase letter", password.any { it.isUpperCase() }),
+        PasswordRule("At least one lowercase letter", password.any { it.isLowerCase() }),
+        PasswordRule("At least one digit", password.any { it.isDigit() }),
+        PasswordRule("At least one special character", password.any { !it.isLetterOrDigit() })
+    )
+}
+
+
 @Composable
 fun LabelWithAsterisk(label: String) {
     Text(buildAnnotatedString {
@@ -203,11 +245,20 @@ fun PasswordInputField(
     onValueChange: (String) -> Unit,
     onToggleVisibility: (Boolean) -> Unit
 ) {
+    var isFocused by remember { mutableStateOf(false) }
+    val passwordRules = validatePassword(value)
+    val isValid = passwordRules.all { it.isValid }
+
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
         label = { Text("Enter your password") },
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .onFocusChanged { focusState ->
+                isFocused = focusState.isFocused
+            },
+        isError = isFocused && !isValid,
         singleLine = true,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
         visualTransformation = if (visible) VisualTransformation.None else PasswordVisualTransformation(),
@@ -215,14 +266,75 @@ fun PasswordInputField(
             IconButton(onClick = { onToggleVisibility(!visible) }) {
                 Icon(
                     painter = painterResource(
-                        if (visible) R.drawable.ic_visibility else R.drawable.ic_visibility_off
+                        if (visible) R.drawable.ic_visibility
+                        else R.drawable.ic_visibility_off
                     ),
                     contentDescription = if (visible) "Hide password" else "Show password"
                 )
             }
         }
     )
+
+    if (isFocused) {
+        Column(modifier = Modifier.padding(top = 8.dp)) {
+            passwordRules.forEach { rule ->
+                Text(
+                    text = (if (rule.isValid) "✅ " else "❌ ") + rule.description,
+                    color = if (rule.isValid) Color(0xFF4CAF50) else Color(0xFFD32F2F),
+                    fontSize = 12.sp
+                )
+            }
+        }
+    }
 }
+
+@Composable
+fun ConfirmPasswordInputField(
+    confirmPassword: String,
+    password: String,
+    visible: Boolean,
+    onValueChange: (String) -> Unit,
+    onToggleVisibility: (Boolean) -> Unit
+) {
+    var isFocused by remember { mutableStateOf(false) }
+    val doPasswordsMatch = confirmPassword == password && confirmPassword.isNotEmpty()
+
+    OutlinedTextField(
+        value = confirmPassword,
+        onValueChange = onValueChange,
+        label = { Text("Confirm your password") },
+        modifier = Modifier
+            .fillMaxWidth()
+            .onFocusChanged { focusState ->
+                isFocused = focusState.isFocused
+            },
+        isError = isFocused && !doPasswordsMatch,
+        singleLine = true,
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+        visualTransformation = if (visible) VisualTransformation.None else PasswordVisualTransformation(),
+        trailingIcon = {
+            IconButton(onClick = { onToggleVisibility(!visible) }) {
+                Icon(
+                    painter = painterResource(
+                        if (visible) R.drawable.ic_visibility
+                        else R.drawable.ic_visibility_off
+                    ),
+                    contentDescription = if (visible) "Hide password" else "Show password"
+                )
+            }
+        }
+    )
+
+    if (isFocused && !doPasswordsMatch) {
+        Text(
+            text = "❌ Passwords do not match",
+            color = Color(0xFFD32F2F),
+            fontSize = 12.sp,
+            modifier = Modifier.padding(top = 8.dp)
+        )
+    }
+}
+
 
 @Composable
 fun RegisterGoogle(
