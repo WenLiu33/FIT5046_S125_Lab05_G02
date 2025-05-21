@@ -172,7 +172,7 @@ fun FridgeItemList(viewModel: IngredientViewModel = viewModel()) {
                 Toast.makeText(context, "Item updated", Toast.LENGTH_SHORT).show()
             },
             onRemove = {
-                viewModel.deleteIngredient(it)
+                viewModel.markIngredientAsDeleted(it.id)
                 isEditDialogVisible = false
                 selectedIngredient = null
                 Toast.makeText(context, "Item removed", Toast.LENGTH_SHORT).show()
@@ -464,7 +464,7 @@ fun ClearFridgeButton(viewModel: IngredientViewModel) {
                     // Fridge cleared
                     Button(
                         onClick = {
-                            viewModel.clearAllIngredients()
+                            viewModel.markAllIngredientsAsDeleted()
                             Toast.makeText(context, "Fridge cleared!", Toast.LENGTH_SHORT).show()
                             showDialog = false
                         },

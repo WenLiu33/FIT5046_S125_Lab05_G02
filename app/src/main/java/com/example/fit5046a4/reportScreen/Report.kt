@@ -140,8 +140,10 @@ fun TotalFridgeValue(viewModel: IngredientViewModel = viewModel()) {
     } else {
         // Sum price × quantity for each ingredient
         ingredients.forEach { ingredient ->
-            totalValue += ingredient.unitPrice * ingredient.quantity
+            val normalizedQty = normalizeQuantity(ingredient.quantity, ingredient.unit)
+            totalValue += ingredient.unitPrice * normalizedQty
         }
+
         // Display total
         Text(
             text = "💰 Current value: \$${"%.2f".format(totalValue)}",
@@ -338,3 +340,13 @@ fun Report(modifier: Modifier = Modifier) {
         }
     }
 }
+
+fun normalizeQuantity(quantity: Int, unit: String): Float {
+    return when (unit) {
+        "g" -> quantity / 1000f
+        "ml" -> quantity / 1000f
+        "kg", "L", "pc(s)", "cup(s)" -> quantity.toFloat()
+        else -> quantity.toFloat()
+    }
+}
+

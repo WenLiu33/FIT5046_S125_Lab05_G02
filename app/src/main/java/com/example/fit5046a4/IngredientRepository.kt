@@ -26,4 +26,15 @@ class IngredientRepository(application: Application) {
         ingredientDAO.deleteAllIngredients()
     }
 
+    fun getAllIngredientsIncludingDeleted(): Flow<List<Ingredient>> {
+        return ingredientDAO.getAllIngredientsIncludingDeleted() //for bar chart use
+    }
+
+    suspend fun markAsDeleted(id: Int) {
+        ingredientDAO.markIngredientAsDeleted(id) // for edit ingredient removal
+    }
+
+    suspend fun markAllAsDeleted() {
+        ingredientDAO.markAllAsDeleted()
+    }
 }

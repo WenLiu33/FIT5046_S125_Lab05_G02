@@ -72,7 +72,9 @@ fun weeklySpendSundayToSaturday(ingredients: List<Ingredient>): List<Float> {
                     .atZone(ZoneId.systemDefault())
                     .toLocalDate() == date
             }
-            .sumOf { it.originalQuantity * it.unitPrice.toDouble() }
+            // apply normalization to originalQuantity to match the base unit of unitPrice
+            .sumOf { normaliseQuantity(it.originalQuantity, it.originalUnit) * it.unitPrice.toDouble() }
+
             .toFloat()
     }
 }
@@ -85,7 +87,7 @@ fun weeklySpendSundayToSaturday(ingredients: List<Ingredient>): List<Float> {
 @Composable
 fun BarChartScreen(viewModel: IngredientViewModel = viewModel()) {
     // Collect full ingredient list from ViewModel
-    val ingredients by viewModel.allIngredients.collectAsState(initial = emptyList())
+    val ingredients by viewModel.allIngredientsIncludingDeleted.collectAsState(emptyList()) //includes removed items
 
     // Compute a 7-element list of floats (one per weekday)
     val spendByDay = weeklySpendSundayToSaturday(ingredients)
