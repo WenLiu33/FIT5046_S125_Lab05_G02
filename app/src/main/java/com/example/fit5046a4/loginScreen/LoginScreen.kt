@@ -7,6 +7,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,6 +21,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ElevatedButton
@@ -68,6 +70,8 @@ fun LoginScreen(
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
+    var showForgotPasswordDialog by remember { mutableStateOf(false) }
+
     var context = LocalContext.current
 
     Box(
@@ -160,12 +164,29 @@ fun LoginScreen(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // Forgot Password
-                TextButton(
-                    onClick = {},
-                    modifier = Modifier.align(Alignment.End)
-                ) {
-                    Text("Forgot Password?")
+                Text(
+                    text = "Forgot Password?",
+                    color = Color(0xFF415F91),
+                    fontSize = 14.sp,
+                    modifier = Modifier
+                        .align(Alignment.End)
+                        .padding(top = 8.dp)
+                        .clickable { showForgotPasswordDialog = true }
+                )
+                if (showForgotPasswordDialog) {
+                    ForgotPasswordDialog(
+                        onDismiss = { showForgotPasswordDialog = false },
+                        onResetClicked = { emailInput ->
+                            authViewModel.resetPassword(emailInput) { success, message ->
+                                showForgotPasswordDialog = false
+                                if (success) {
+                                    AppUtil.showToast(context, "Reset email sent!")
+                                } else {
+                                    AppUtil.showToast(context, message ?: "Oops, something went wrong")
+                                }
+                            }
+                        }
+                    )
                 }
             }
 
@@ -319,4 +340,54 @@ fun LoginGoogle(
             }
         }
     }
+}
+
+@Composable
+fun ForgotPasswordDialog(
+    onDismiss: () -> Unit,
+    onResetClicked: (String) -> Unit
+) {
+    var email by remember { mutableStateOf("") }
+    var error by remember { mutableStateOf<String?>(null) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(text = "Forgot Password", fontWeight = FontWeight.Bold)
+        },
+        text = {
+            Column {
+                OutlinedTextField(
+                    value = email,
+                    onValueChange = {
+                        email = it
+                        error = null
+                    },
+                    label = { Text("Enter your email") },
+                    isError = error != null,
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
+                )
+                if (error != null) {
+                    Text(text = error!!, color = Color.Red, fontSize = 12.sp)
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = {
+                if (email.isBlank()) {
+                    error = "Email cannot be empty"
+                } else {
+                    onResetClicked(email)
+                }
+            }) {
+                Text("Reset Password")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        }
+    )
 }

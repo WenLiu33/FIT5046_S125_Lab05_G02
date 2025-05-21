@@ -3,6 +3,7 @@ package com.example.fit5046a4.firebaseAuth
 import androidx.lifecycle.ViewModel
 import com.example.fit5046a4.database.UserModel
 import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.firestore
 
@@ -20,7 +21,6 @@ class AuthViewModel : ViewModel(){
                     OnResult(false, it.exception?.localizedMessage)
                 }
             }
-
     }
 
     fun register(email: String, password: String, OnResult: (Boolean, String?)-> Unit){
@@ -43,6 +43,17 @@ class AuthViewModel : ViewModel(){
                     OnResult(false, it.exception?.localizedMessage)
                 }
             }
-
     }
+
+    fun resetPassword(email: String, callback: (Boolean, String?) -> Unit) {
+        FirebaseAuth.getInstance().sendPasswordResetEmail(email)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    callback(true, null)
+                } else {
+                    callback(false, task.exception?.message)
+                }
+            }
+    }
+
 }
