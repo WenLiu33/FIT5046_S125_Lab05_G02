@@ -1,12 +1,8 @@
 package com.example.fit5046a4
 
-
-import android.app.Application
-import android.os.Build
+// Core Android and Jetpack Compose imports
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,43 +19,33 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-
-//noinspection UsingMaterialAndMaterial3Libraries
-//noinspection UsingMaterialAndMaterial3Libraries
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.TextButton
+import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -73,16 +59,18 @@ import com.example.fit5046a4.database.Ingredient
 
 //***FUNCTIONS BELOW****
 
-//This is the implementation of FridgeItemList
-//This function will display the current list of ingredients as a lazy list
-//The list of ingredients will be displayed from the ingredient database
+/**
+ * Displays the list of ingredients in the fridge via Lazy Column.
+ * Shows an empty message when no ingredients are stored.
+ * Allows editing and removal of items through a popup dialog.
+ */
 @Composable
 //IngredientViewModel parameter to collect ingredients as list
 fun FridgeItemList(viewModel: IngredientViewModel = viewModel()) {
     val ingredients by viewModel.allIngredients.collectAsState(initial = emptyList())
     val context = LocalContext.current
 
-    // states for dialogue and selected ingredient
+    // States for dialogue and selected ingredient for edit
     var selectedIngredient by remember { mutableStateOf<Ingredient?>(null) }
     var isEditDialogVisible by remember { mutableStateOf(false) }
 
@@ -108,7 +96,7 @@ fun FridgeItemList(viewModel: IngredientViewModel = viewModel()) {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Your fridge is currently empty! \nAdd items below.",
+                        text = "Your fridge is currently empty! \uD83D\uDE32 \nAdd items below.",
                         style = MaterialTheme.typography.bodyLarge,
                         textAlign = TextAlign.Center,
                         //color = Color(0xFF888888)
@@ -146,7 +134,7 @@ fun FridgeItemList(viewModel: IngredientViewModel = viewModel()) {
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                //Displays the ingredient, quantity and unit
+                                //Displays the ingredient/item, quantity and unit
                                 text = "${ingredient.name}   x   ${ingredient.quantity} ${ingredient.unit}",
                                 modifier = Modifier.weight(1f),
                                 style = MaterialTheme.typography.bodyLarge
@@ -155,13 +143,10 @@ fun FridgeItemList(viewModel: IngredientViewModel = viewModel()) {
                                 text = "edit",
                                 color = Color(0xFF3949AB),
                                 modifier = Modifier.clickable {
-//                                    Toast.makeText(
-//                                        context,
-//                                        "Edit ${ingredient.name}",
-//                                        Toast.LENGTH_SHORT
-//                                    ).show()
-                                    selectedIngredient = ingredient // ***
-                                    isEditDialogVisible = true // ***
+
+                                    // 'Edit' text to open dialogue for editing item, dialogue displayed upon click
+                                    selectedIngredient = ingredient
+                                    isEditDialogVisible = true
                                 }
                             )
                         }
@@ -170,7 +155,7 @@ fun FridgeItemList(viewModel: IngredientViewModel = viewModel()) {
             }
         }
     }
-    // *** Display the edit dialog when needed ***
+    // When edit is triggered, display the edit dialogue
     if (isEditDialogVisible && selectedIngredient != null) {
         EditIngredientDialog(
             ingredient = selectedIngredient!!,
@@ -194,10 +179,12 @@ fun FridgeItemList(viewModel: IngredientViewModel = viewModel()) {
     }
 }
 
-//This is the Fridge function that lays out the components
-//The first component will be the FridgeItemList
-//The second component will be the AddIngredients Function
-//navController is passed in to allow navigation from inside this screen (e.g., to "add_ingredient")
+/**
+ * Composable representing the Fridge screen layout including image, ingredient list, and add button.
+ * The first cimponent will be the FrigeItemList()
+ * The second component will be the AddIngredients()
+ * navController is passed in to allow navigation from inside this screen
+ */
 @Composable
 fun Fridge(navController: NavController) {
     Column(
@@ -208,16 +195,17 @@ fun Fridge(navController: NavController) {
     ) {
         Spacer(modifier = Modifier.height(50.dp))
 
+        //Fridge image
         val image: Painter = painterResource(id = R.drawable.refrigerator)
         Image(
             painter = image, contentDescription = "Fridge Image", modifier = Modifier.size(150.dp)
         )
 
         Spacer(modifier = Modifier.height(50.dp))
-        Text("Here's what you've got right now:", fontSize = 20.sp)
+        Text("\uD83D\uDCE6 Here's what you've got right now:", fontSize = 20.sp)
         Spacer(modifier = Modifier.height(30.dp))
 
-        //displays fridge items from database
+        //Displays fridge items from database
         FridgeItemList()
 
         Spacer(modifier = Modifier.height(30.dp))
@@ -346,45 +334,7 @@ fun EditIngredientDialog(
             }
         },
 
-        /**
-         * This is a different layout where only 'save' is a button*/
-        //Confirm button to save changes
-//        confirmButton = {
-//            Button(onClick = {
-//                //creates a copy of the item/ingredient with updated attributes
-//                val updated = ingredient.copy(
-//                    quantity = quantity.toIntOrNull() ?: ingredient.quantity,
-//                    unit = selectedUnit
-//                )
-//                //passes updated item to FridgeItemList() function
-//                onSave(updated) //calls the viewModel.updateIngredient(updated)
-//            },
-//
-//                ) {
-//                Text("Save")
-//            }
-//        },
-//
-//        //Dismiss button: removes item or cancels
-//        dismissButton = {
-//            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-//
-//                //Remove item
-//                TextButton(
-//                    onClick = { onRemove(ingredient) }
-//                ) {
-//                    Text("Remove Item", color = Color.Red)
-//                }
-//
-//                //Cancel button (dismisses dialog and goes back to normal screen)
-//                TextButton(onClick = onDismiss) {
-//                    Text("Cancel")
-//                }
-//            }
-//        }
-//    )
-        /**
-         * This is a different layout where all three are buttons*/
+        //Action buttons: Cancel, Remove, Save
         confirmButton = {
             Row(
                 modifier = Modifier
@@ -425,10 +375,6 @@ fun EditIngredientDialog(
                         onSave(updated)
                     },
                     modifier = Modifier.weight(1f),
-//                            colors = ButtonDefaults.buttonColors(
-//                                containerColor = Color(0xFFB3E5FC),
-//                                contentColor = Color.Black
-//                            )
                 ) {
                     Text("Save", fontSize = 10.sp)
                 }
@@ -437,8 +383,9 @@ fun EditIngredientDialog(
     )
 }
 
-//This is the function to Add Ingredients
-//Upon clicking this button, user will be navigated to the AddIngredientScreen
+/**
+ * Button for navigating to the AddIngredientScreen.
+ */
 @Composable
 fun AddIngredientsButton(navController: NavController){
     val context = LocalContext.current
