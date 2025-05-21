@@ -56,6 +56,8 @@ import com.example.fit5046a4.AppUtil
 import com.example.fit5046a4.firebaseAuth.AuthViewModel
 import com.example.fit5046a4.firebaseAuth.GoogleSignInUtils
 import com.example.fit5046a4.R
+import com.example.fit5046a4.registerScreen.LabelWithAsterisk
+import com.example.fit5046a4.registerScreen.validatePassword
 
 @Composable
 fun LoginScreen(
@@ -122,15 +124,7 @@ fun LoginScreen(
                     modifier = Modifier.padding(bottom = 32.dp)
                 )
 
-                Text(
-                    buildAnnotatedString {
-                        append("Email address")
-                        withStyle(SpanStyle(color = Color.Red)) {
-                            append(" *")
-                        }
-                    }
-                )
-
+                LabelWithAsterisk("Email address")
                 OutlinedTextField(
                     value = email,
                     onValueChange = { email = it },
@@ -142,14 +136,7 @@ fun LoginScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                Text(
-                    buildAnnotatedString {
-                        append("Password")
-                        withStyle(SpanStyle(color = Color.Red)) {
-                            append(" *")
-                        }
-                    }
-                )
+                LabelWithAsterisk("Password")
                 OutlinedTextField(
                     value = password,
                     onValueChange = {password = it},
@@ -185,18 +172,24 @@ fun LoginScreen(
             // Login Button
             FilledTonalButton(
                 onClick = {
-                    authViewModel.login(email, password) {success, errorMessage ->
-                        if(success) {
-                            onNavigateToMain()
-                        }else{
-                            AppUtil.showToast(context, errorMessage?:"Something went wrong")
+                    val passwordRules = validatePassword(password)
+                    val isPasswordValid = passwordRules.all { it.isValid }
+
+                    when {
+                        email.isBlank() || password.isBlank() -> {
+                            AppUtil.showToast(context, "Please fill in all required fields")
+                        }
+                        else -> {
+                            authViewModel.login(email, password) { success, errorMessage ->
+                                if (success) {
+                                    onNavigateToMain()
+                                } else {
+                                    AppUtil.showToast(context, errorMessage ?: "Something went wrong")
+                                }
+                            }
                         }
                     }
                 },
-//                onClick = {
-//                    Log.i("Credential", "Email: $email, Password: $password")
-//                    onNavigateToMain()
-//                          },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),
@@ -240,6 +233,14 @@ fun LoginScreen(
 
         }
     }
+}
+
+@Composable
+fun LabelWithAsterisk(label: String) {
+    Text(buildAnnotatedString {
+        append(label)
+        withStyle(SpanStyle(color = Color.Red)) { append(" *") }
+    })
 }
 
 @Composable
@@ -319,9 +320,3 @@ fun LoginGoogle(
         }
     }
 }
-
-//@Preview(showBackground = true)
-//@Composable
-//fun LoginPreview() {
-//    LoginScreen()
-//}

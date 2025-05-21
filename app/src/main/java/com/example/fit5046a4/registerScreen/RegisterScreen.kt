@@ -147,26 +147,27 @@ fun RegisterScreen(
                     val passwordRules = validatePassword(password)
                     val isPasswordValid = passwordRules.all { it.isValid }
 
-                    if (!isPasswordValid) {
-                        AppUtil.showToast(context, "Password does not meet the required rules")
-                        return@FilledTonalButton
-                    }
-
-                    if (password != confirmPassword) {
-                        AppUtil.showToast(context, "Passwords do not match")
-                        return@FilledTonalButton
-                    }
-
-                    if (!isTermsAccepted) {
-                        AppUtil.showToast(context, "Please accept the Terms of Service")
-                        return@FilledTonalButton
-                    }
-
-                    authViewModel.register(email, password) {success, errorMessage ->
-                        if(success) {
-                            onNavigateToMain()
-                        }else{
-                            AppUtil.showToast(context, errorMessage?:"Something went wrong")
+                    when {
+                        email.isBlank() || password.isBlank() || confirmPassword.isBlank() -> {
+                            AppUtil.showToast(context, "Please fill in all required fields")
+                        }
+                        !isPasswordValid -> {
+                            AppUtil.showToast(context, "Password does not meet requirements")
+                        }
+                        password != confirmPassword -> {
+                            AppUtil.showToast(context, "Passwords do not match")
+                        }
+                        !isTermsAccepted -> {
+                            AppUtil.showToast(context, "You must accept the Terms of Service")
+                        }
+                        else -> {
+                            authViewModel.register(email, password) { success, errorMessage ->
+                                if (success) {
+                                    onNavigateToMain()
+                                } else {
+                                    AppUtil.showToast(context, errorMessage ?: "Something went wrong")
+                                }
+                            }
                         }
                     }
                 },
@@ -423,9 +424,3 @@ fun TermsCheckbox(
         )
     }
 }
-
-//@Preview(showBackground = true)
-//@Composable
-//fun RegisterPreview() {
-//    RegisterScreen()
-//}
