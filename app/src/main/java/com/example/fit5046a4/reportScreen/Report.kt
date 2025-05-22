@@ -229,8 +229,8 @@ fun IngredientsRunningLow(viewModel: IngredientViewModel = viewModel()) {
         ingredients.filter { ing ->
             val isLowG   = ing.unit == "g"   && ing.quantity < 100f
             val isLowMl  = ing.unit == "ml"  && ing.quantity < 100f
-            val isLowPc  = ing.unit == "pcs" && ing.quantity < 5f
-            val isLowCup = ing.unit == "cups"&& ing.quantity < 5f
+            val isLowPc  = ing.unit == "pc(s)" && ing.quantity < 5f
+            val isLowCup = ing.unit == "cup(s)"&& ing.quantity < 5f
             // include if any condition is true
             isLowG || isLowMl || isLowPc || isLowCup
         }

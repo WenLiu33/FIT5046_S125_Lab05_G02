@@ -22,4 +22,8 @@ class IngredientRepository(application: Application) {
         ingredientDAO.updateIngredient(ingredient)
     }
 
+    suspend fun deleteAllIngredients() {
+        ingredientDAO.deleteAllIngredients()
+    }
+
 }

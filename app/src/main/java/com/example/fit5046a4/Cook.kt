@@ -86,7 +86,7 @@ fun Cook(viewModel: RecipeViewModel = viewModel(), modifier: Modifier = Modifier
         )
 
         Text(
-            text = "Meal Type",
+            text = "\uD83C\uDF7D\uFE0F Meal Type",
             style = MaterialTheme.typography.titleMedium
         )
 
