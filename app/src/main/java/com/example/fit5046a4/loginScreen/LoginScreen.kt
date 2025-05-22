@@ -82,6 +82,7 @@ fun LoginScreen(
         modifier = Modifier
             .fillMaxSize()
             .pointerInput(Unit) {
+                // Clear focus when tapping outside input fields
                 detectTapGestures(onTap = {
                     focusManager.clearFocus()
                 })
@@ -137,6 +138,7 @@ fun LoginScreen(
                     modifier = Modifier.padding(bottom = 32.dp)
                 )
 
+                // Email Field
                 LabelWithAsterisk("Email address")
                 OutlinedTextField(
                     value = email,
@@ -149,6 +151,7 @@ fun LoginScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
+                // Password Field
                 LabelWithAsterisk("Password")
                 OutlinedTextField(
                     value = password,
@@ -173,6 +176,7 @@ fun LoginScreen(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
+                // Forgot Password Link
                 Text(
                     text = "Forgot Password?",
                     color = Color(0xFF415F91),
@@ -182,6 +186,7 @@ fun LoginScreen(
                         .padding(top = 8.dp)
                         .clickable { showForgotPasswordDialog = true }
                 )
+                // Dialog for password reset
                 if (showForgotPasswordDialog) {
                     ForgotPasswordDialog(
                         onDismiss = { showForgotPasswordDialog = false },
@@ -238,6 +243,7 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(24.dp)) // Increased spacing after divider
 
+            // Google Login
             LoginGoogle(onSuccess = onNavigateToMain)
 
             Spacer(modifier = Modifier.height(16.dp)) // Added bottom spacing

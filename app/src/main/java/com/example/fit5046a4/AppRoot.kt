@@ -22,12 +22,16 @@ import com.google.firebase.auth.auth
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AppRoot() {
+    // Tracks the user's login status using Firebase Auth
     var isLoggedIn by remember { mutableStateOf(Firebase.auth.currentUser != null) }
 
     val navController = rememberNavController()
+
+    // Set the start destination based on login status
     val startDestination = if (isLoggedIn) "MainApp" else "LoginDestination"
 
     NavHost(navController = navController, startDestination = startDestination) {
+        // Login screen with navigation to MainApp or Register
         loginScreen(
             onNavigateToMain = {
                 isLoggedIn = true
@@ -37,6 +41,8 @@ fun AppRoot() {
             },
             onNavigateToRegister = { navController.navigateToRegister() }
         )
+
+        // Register screen with navigation to MainApp, Login, or Terms
         registerScreen(
             onNavigateToMain = {
                 isLoggedIn = true
@@ -48,8 +54,10 @@ fun AppRoot() {
             onNavigateToTerms = { navController.navigateToTerms() }
         )
 
+        // Terms of Service screen
         termsScreen(navController)
 
+        // MainApp screen with logout functionality
         composable("MainApp") {
             BottomNavigationBarAndTopBar(
                 onLogout = {

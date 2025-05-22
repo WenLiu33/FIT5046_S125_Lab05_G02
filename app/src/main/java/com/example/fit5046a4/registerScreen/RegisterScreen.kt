@@ -70,6 +70,7 @@ fun RegisterScreen(
                 .padding(32.dp, 24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ){
+            // App title section
             Column (
                 modifier = Modifier
 //                    .weight(1f)
@@ -83,14 +84,9 @@ fun RegisterScreen(
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(bottom = 24.dp)
                 )
-
-//                Image(
-//                    painter = painterResource(R.drawable.fridge),
-//                    contentDescription = "Google logo",
-//                    modifier = Modifier.size(50.dp)
-//                )
             }
 
+            // Registration form section
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -112,6 +108,7 @@ fun RegisterScreen(
                     modifier = Modifier.padding(bottom = 32.dp)
                 )
 
+                // Email input
                 LabelWithAsterisk("Email address")
                 OutlinedTextField(
                     value = email,
@@ -124,6 +121,7 @@ fun RegisterScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
+                // Password input with validation feedback
                 LabelWithAsterisk("Password")
                 PasswordInputField(
                     password,
@@ -134,6 +132,7 @@ fun RegisterScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
+                // Confirm password field with match check
                 LabelWithAsterisk("Confirm Password")
                 ConfirmPasswordInputField(
                     confirmPassword = confirmPassword,
@@ -142,10 +141,9 @@ fun RegisterScreen(
                     onValueChange = { confirmPassword = it },
                     onToggleVisibility = { passwordVisible = it }
                 )
-
-
             }
 
+            // Checkbox for Terms of Service
             TermsCheckbox(
                 checked = isTermsAccepted,
                 onCheckedChange = { isTermsAccepted = it },
@@ -153,6 +151,7 @@ fun RegisterScreen(
                 modifier = Modifier.padding(vertical = 16.dp)
             )
 
+            // Register button with validation logic
             FilledTonalButton(
                 onClick = {
                     val passwordRules = validatePassword(password)
@@ -200,11 +199,12 @@ fun RegisterScreen(
 
             Spacer(modifier = Modifier.height(24.dp)) // Increased spacing after divider
 
+            // Google Sign-In button
             RegisterGoogle(onSuccess = onNavigateToMain)
 
             Spacer(modifier = Modifier.height(16.dp)) // Added bottom spacing
 
-
+            // Navigation to login screen
             TextButton(
                 onClick = onNavigateToLogin,
                 modifier = Modifier.padding(top = 16.dp)
@@ -229,8 +229,10 @@ fun RegisterScreen(
     }
 }
 
+// Helper class to store and display password validation results
 data class PasswordRule(val description: String, val isValid: Boolean)
 
+// Rules: length, case, digit, symbol
 fun validatePassword(password: String): List<PasswordRule> {
     return listOf(
         PasswordRule("At least 8 characters", password.length >= 8),
@@ -241,7 +243,7 @@ fun validatePassword(password: String): List<PasswordRule> {
     )
 }
 
-
+// Composable to add red asterisk to required labels
 @Composable
 fun LabelWithAsterisk(label: String) {
     Text(buildAnnotatedString {
@@ -250,6 +252,7 @@ fun LabelWithAsterisk(label: String) {
     })
 }
 
+// Password input field with live rule checking
 @Composable
 fun PasswordInputField(
     value: String,
@@ -300,6 +303,7 @@ fun PasswordInputField(
     }
 }
 
+// Confirm password field with match validation
 @Composable
 fun ConfirmPasswordInputField(
     confirmPassword: String,
@@ -347,7 +351,7 @@ fun ConfirmPasswordInputField(
     }
 }
 
-
+// Google Sign-In button logic
 @Composable
 fun RegisterGoogle(
     onSuccess: () -> Unit
@@ -407,6 +411,7 @@ fun RegisterGoogle(
     }
 }
 
+// Terms of Service checkbox with navigation
 @Composable
 fun TermsCheckbox(
     checked: Boolean,
