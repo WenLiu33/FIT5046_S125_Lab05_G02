@@ -129,22 +129,4 @@ fun scheduleFridgeWorker(context: Context) {
         request
     )
 
-}
 
-
-//@Composable
-//fun Greeting(name: String, modifier: Modifier = Modifier) {
-//    Text(
-//        text = "Hello $name!",
-//        modifier = modifier
-//    )
-//}
-
-//@RequiresApi(Build.VERSION_CODES.O)
-//@Preview(showBackground = true)
-//@Composable
-//fun GreetingPreview() {
-//    FIT5046A4Theme {
-//        BottomNavigationBarAndTopBar()
-//    }
-//}
