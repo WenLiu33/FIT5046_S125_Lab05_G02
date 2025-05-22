@@ -128,5 +128,5 @@ fun scheduleFridgeWorker(context: Context) {
         ExistingPeriodicWorkPolicy.UPDATE,
         request
     )
-
+}
 
