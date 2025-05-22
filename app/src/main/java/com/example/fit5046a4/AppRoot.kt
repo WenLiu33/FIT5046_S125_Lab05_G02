@@ -10,6 +10,7 @@ import androidx.compose.runtime.setValue
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.fit5046a4.bottomNavigationBarAndTopBar.BottomNavigationBarAndTopBar
 import com.example.fit5046a4.loginScreen.loginScreen
 import com.example.fit5046a4.registerScreen.navigateToRegister
 import com.example.fit5046a4.registerScreen.registerScreen

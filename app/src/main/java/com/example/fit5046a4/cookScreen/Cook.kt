@@ -1,6 +1,5 @@
-package com.example.fit5046a4
+package com.example.fit5046a4.cookScreen
 
-import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -38,6 +37,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import com.example.fit5046a4.R
 import com.example.fit5046a4.api.RecipeViewModel
 
 /**

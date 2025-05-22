@@ -1,7 +1,6 @@
-package com.example.fit5046a4
+package com.example.fit5046a4.bottomNavigationBarAndTopBar
 
 import androidx.annotation.DrawableRes
-import androidx.compose.ui.graphics.vector.ImageVector
 
 data class NavRoute(
     val route:String,
