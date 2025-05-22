@@ -1,4 +1,4 @@
-package com.example.fit5046a4
+package com.example.fit5046a4.fridgeScreen
 
 // Core Android and Jetpack Compose imports
 import android.widget.Toast
@@ -33,7 +33,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -56,6 +55,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.fit5046a4.IngredientViewModel
+import com.example.fit5046a4.R
 import com.example.fit5046a4.database.Ingredient
 
 

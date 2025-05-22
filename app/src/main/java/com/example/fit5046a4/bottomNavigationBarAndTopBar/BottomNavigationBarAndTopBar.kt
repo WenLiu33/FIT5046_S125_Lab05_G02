@@ -1,4 +1,4 @@
-package com.example.fit5046a4
+package com.example.fit5046a4.bottomNavigationBarAndTopBar
 //noinspection UsingMaterialAndMaterial3Libraries
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -7,9 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.Icons.AutoMirrored.Sharp
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
-import androidx.compose.material.icons.automirrored.sharp.ExitToApp
 import androidx.compose.material3.Icon
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -28,21 +26,19 @@ import androidx.navigation.compose.rememberNavController
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.fit5046a4.loginScreen.LoginScreen
-import com.example.fit5046a4.loginScreen.loginScreen
-import com.example.fit5046a4.registerScreen.RegisterScreen
-import com.example.fit5046a4.registerScreen.navigateToRegister
+import com.example.fit5046a4.bottomNavigationBarAndTopBar.NavRoute
+import com.example.fit5046a4.R
+import com.example.fit5046a4.addIngredientsScreen.AddIngredientScreen
+import com.example.fit5046a4.cookScreen.Cook
+import com.example.fit5046a4.fridgeScreen.Fridge
 import com.example.fit5046a4.reportScreen.Report
-import com.google.firebase.Firebase
-import com.google.firebase.auth.auth
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BottomNavigationBarAndTopBar(onLogout: () -> Unit) {
     val navRoutes = listOf(
-        NavRoute("fridge", R.drawable.refrigerator_20 , "Fridge"),
+        NavRoute("fridge", R.drawable.refrigerator_20, "Fridge"),
         NavRoute("dashboard", R.drawable.report, "Dashboard"),
         NavRoute("cook", R.drawable.mix_20, "Cook")
     )
