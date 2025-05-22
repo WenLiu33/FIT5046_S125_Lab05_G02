@@ -1,4 +1,4 @@
-**📦 FIT5046 – Fridge Management App (DRAFT)**
+**📦 FIT5046 – Fridge Management App **
 
 This project is part of the FIT5046 Mobile and Distributed Computing Systems unit at Monash University, S1 2025.
 
@@ -19,7 +19,7 @@ helping users avoid duplicate purchases and reduce forgotten or wasted food.
 - **Add, edit, or remove items** in the fridge
 - **Low stock and expiry awareness** to support timely usage
 - **Grocery spend reports and most-used ingredient stats**
-- **Recipe suggestions** based on current inventory
+- **Recipe suggestions** 
 
 <br>
 
@@ -32,8 +32,9 @@ helping users avoid duplicate purchases and reduce forgotten or wasted food.
 **🧪 How to Run:**
 1) **Clone** ```bash
    git clone https://github.com/WenLiu33/FIT5046_S125_Lab05_G02.git```
-2) **Open** on Android Studio, ensure you are using an Anrdoid Emulator
-3) **Build** and run the app!
+2) Drag ```google-services.json``` file provided in zip folder into 'app' folder
+3) **Open** on Android Studio, ensure you are using an Anrdoid Emulator
+4) **Build** and run the app!
 
 <br>
 
