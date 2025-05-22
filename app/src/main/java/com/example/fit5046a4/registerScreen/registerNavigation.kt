@@ -6,15 +6,18 @@ import androidx.navigation.compose.composable
 
 fun NavGraphBuilder.registerScreen(
     onNavigateToMain: () -> Unit,
-    onNavigateToLogin: () -> Unit
+    onNavigateToLogin: () -> Unit,
+    onNavigateToTerms: () -> Unit
 ) {
     composable("RegisterDestination") {
         RegisterScreen(
             onNavigateToMain = onNavigateToMain,
-            onNavigateToLogin = onNavigateToLogin
+            onNavigateToLogin = onNavigateToLogin,
+            onNavigateToTerms = onNavigateToTerms
         )
     }
 }
+
 
 fun NavController.navigateToRegister() {
     navigate("RegisterDestination")

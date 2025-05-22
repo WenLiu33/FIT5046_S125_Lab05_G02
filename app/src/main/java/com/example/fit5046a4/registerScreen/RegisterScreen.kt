@@ -38,6 +38,7 @@ import com.example.fit5046a4.loginScreen.DividerWithText
 fun RegisterScreen(
     onNavigateToMain: () -> Unit,
     onNavigateToLogin: () -> Unit,
+    onNavigateToTerms: () -> Unit,
     authViewModel: AuthViewModel = viewModel()
 ) {
 
@@ -139,6 +140,7 @@ fun RegisterScreen(
             TermsCheckbox(
                 checked = isTermsAccepted,
                 onCheckedChange = { isTermsAccepted = it },
+                onNavigateToTerms = onNavigateToTerms,
                 modifier = Modifier.padding(vertical = 16.dp)
             )
 
@@ -400,6 +402,7 @@ fun RegisterGoogle(
 fun TermsCheckbox(
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
+    onNavigateToTerms: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -420,7 +423,10 @@ fun TermsCheckbox(
                 }
             },
             style = MaterialTheme.typography.bodySmall,
-            modifier = Modifier.clickable { onCheckedChange(!checked) }
+            modifier = Modifier.clickable {
+                onCheckedChange(!checked)
+                onNavigateToTerms()
+            }
         )
     }
 }
