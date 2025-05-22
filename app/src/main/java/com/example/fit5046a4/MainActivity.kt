@@ -140,11 +140,11 @@ fun scheduleFridgeWorker(context: Context) {
 //    )
 //}
 
-@RequiresApi(Build.VERSION_CODES.O)
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    FIT5046A4Theme {
-        BottomNavigationBarAndTopBar()
-    }
-}
+//@RequiresApi(Build.VERSION_CODES.O)
+//@Preview(showBackground = true)
+//@Composable
+//fun GreetingPreview() {
+//    FIT5046A4Theme {
+//        BottomNavigationBarAndTopBar()
+//    }
+//}
