@@ -262,7 +262,9 @@ fun EditIngredientDialog(
     // Selected unit for item
     var selectedUnit by remember { mutableStateOf(ingredient.unit) }
     var isExpanded by remember { mutableStateOf(false) }
-    val unitOptions = listOf("g", "kg", "ml", "L", "pc(s)", "cup(s)")
+    val unitOptions = remember(ingredient.unit) {
+        getCompatibleUnits(ingredient.unit) // call function here for unit type
+    }
 
     val context = LocalContext.current
 
@@ -350,6 +352,25 @@ fun EditIngredientDialog(
                         }
                     }
                 }
+
+                // do not allow switching as it will mess with the report costs (e.g. if 500g becomes 5(pc))
+                if (selectedUnit == "pc(s)" || selectedUnit == "cup(s)") {
+                    Text(
+                        text = "📝 Cannot switch unit type for pc(s) and cup(s). If you made a mistake, please remove and re-add item.",
+                        fontSize = 12.sp,
+                        color = Color.Gray,
+                        modifier = Modifier.padding(top = 4.dp)
+                    )
+                }
+
+                // message display, feature only allows for ingredient deductions
+                Text(
+                    text = "🛒 Want to add more? Use 'Add Items' to reflect purchases. This feature only reduces quantity.",
+                    fontSize = 12.sp,
+                    color = Color.Gray,
+                    modifier = Modifier.padding(top = 4.dp)
+                )
+
             }
         },
 
@@ -385,7 +406,8 @@ fun EditIngredientDialog(
 
                 Button(
                     onClick = {
-                        if (quantity.toIntOrNull() == null || quantity.toInt() <= 0) {
+                        val newQty = quantity.toIntOrNull()
+                        if (newQty == null || newQty <= 0) {
                             Toast.makeText(
                                 context,
                                 "Please enter a valid quantity > 0 or remove item.",
@@ -393,10 +415,24 @@ fun EditIngredientDialog(
                             ).show()
                             return@Button
                         }
+
+                        // compare normalized quantity to original
+                        val originalAmount = normalizeForComparison(ingredient.quantity, ingredient.unit) // **
+                        val newAmount = normalizeForComparison(newQty, selectedUnit) // **
+
+                        if (newAmount > originalAmount) {
+                            Toast.makeText(
+                                context,
+                                "To add more than original quantity, please use 'Add Items'.",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            return@Button
+                        }
+
+                        // not updating the originalQuantity as this is used for report calculations
+                        // instead it is updating the current quantity of the item
                         val updated = ingredient.copy(
-                            // not updating the originalQuantity as this is used for report calculations
-                            // instead it is updating the current quantity of the item
-                            quantity = quantity.toIntOrNull() ?: ingredient.quantity,
+                            quantity = newQty,
                             unit = selectedUnit
                         )
                         onSave(updated)
@@ -405,11 +441,13 @@ fun EditIngredientDialog(
                 ) {
                     Text("Save", fontSize = 10.sp)
                 }
+
             }
         }
     )
 }
-
+// not updating the originalQuantity as this is used for report calculations
+// instead it is updating the current quantity of the item
 /**
  * Button for navigating to the AddIngredientScreen.
  */
@@ -509,5 +547,60 @@ fun ClearFridgeButton(viewModel: IngredientViewModel) {
             modifier = Modifier.padding(end = 8.dp)
         )
         Text("Clear Fridge")
+    }
+}
+
+// *** HELPER FUNCTIONS **
+
+/**
+ * Returns a list of units compatible with the given original unit.
+ *
+ * This is used to restrict unit changes during editing to prevent logical errors
+ * in current fridge value calculations, by ensuring that users only switch between
+ * units of the same type (e.g., weight, volume, or discrete count).
+ *
+ * Supported compatibility:
+ * - "kg" and "g" can convert between each other
+ * - "L" and "ml" can convert between each other
+ * - "pc(s)" and "cup(s)" are discrete units and cannot convert to weight/volume
+ * - If the input unit is unknown, all unit options are returned as fallback
+ *
+ * @param originalUnit The unit originally assigned to the item (e.g., "g", "pc(s)")
+ * @return A list of unit strings that are compatible with the original unit
+ */
+fun getCompatibleUnits(originalUnit: String): List<String> {
+    return when (originalUnit.trim().lowercase()) {
+        "kg", "g" -> listOf("kg", "g")
+        "l", "ml" -> listOf("L", "ml")
+        "pc(s)" -> listOf("pc(s)")
+        "cup(s)" -> listOf("cup(s)")
+        else -> listOf("g", "kg", "ml", "L", "pc(s)", "cup(s)")
+    }
+}
+
+/**
+ * Normalises a quantity to a base unit (kilograms or liters) for consistent comparison.
+ *
+ * This function is used to convert units like grams and milliliters to their base units (kg, L),
+ * allowing logical quantity comparisons regardless of the original unit format. (e.g. 500g is less than 1kg)
+ *
+ * Supported conversions:
+ * - g to kg (÷1000)
+ * - ml to L (÷1000)
+ * - kg and L → left unchanged
+ * - Discrete units like "pc(s)" and "cup(s)" → returned as-is (no conversion)
+ *
+ * @param quantity The numeric value of the item quantity (e.g. 500, 2)
+ * @param unit The unit string associated with the quantity (e.g. "g", "kg", "ml", "pc(s)")
+ * @return A Float representing the normalized value, useful for fair quantity comparisons
+ */
+fun normalizeForComparison(quantity: Int, unit: String): Float {
+    return when (unit.trim().lowercase()) {
+        "g" -> quantity / 1000f
+        "kg" -> quantity.toFloat()
+        "ml" -> quantity / 1000f
+        "l" -> quantity.toFloat()
+        "pc(s)", "cup(s)" -> quantity.toFloat()
+        else -> quantity.toFloat()
     }
 }
