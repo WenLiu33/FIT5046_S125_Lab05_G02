@@ -34,12 +34,13 @@ import com.example.fit5046a4.loginScreen.loginScreen
 import com.example.fit5046a4.registerScreen.RegisterScreen
 import com.example.fit5046a4.registerScreen.navigateToRegister
 import com.example.fit5046a4.reportScreen.Report
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview(showBackground = true)
 @Composable
-fun BottomNavigationBarAndTopBar() {
+fun BottomNavigationBarAndTopBar(onLogout: () -> Unit) {
     val navRoutes = listOf(
         NavRoute("fridge", R.drawable.refrigerator_20 , "Fridge"),
         NavRoute("dashboard", R.drawable.report, "Dashboard"),
@@ -74,12 +75,7 @@ fun BottomNavigationBarAndTopBar() {
                 ),
                 actions = {
                     IconButton(onClick = {
-                        navController.navigate("login"){
-                            popUpTo(navController.graph.startDestinationId){
-                                inclusive = true
-                            }
-                            launchSingleTop = true
-                        }
+                        onLogout()
                     }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ExitToApp,
@@ -136,12 +132,6 @@ fun BottomNavigationBarAndTopBar() {
                 //This route handles navigation to the Add Ingredient screen.
                 //It is not part of the bottom navigation bar used for internal flow only, triggered from the Fridge screen.
                 AddIngredientScreen(navController)
-            }
-            composable("login") {
-                loginScreen(
-                    onNavigateToMain = { navController.navigate("MainApp") },
-                    onNavigateToRegister = { navController.navigateToRegister() }
-                )
             }
         }
     }

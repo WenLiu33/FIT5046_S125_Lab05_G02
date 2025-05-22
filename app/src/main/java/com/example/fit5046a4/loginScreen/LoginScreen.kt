@@ -7,6 +7,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,6 +21,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ElevatedButton
@@ -51,17 +53,26 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.fit5046a4.GoogleSignInUtils
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.fit5046a4.AppUtil
+import com.example.fit5046a4.firebaseAuth.AuthViewModel
+import com.example.fit5046a4.firebaseAuth.GoogleSignInUtils
 import com.example.fit5046a4.R
+import com.example.fit5046a4.registerScreen.LabelWithAsterisk
+import com.example.fit5046a4.registerScreen.validatePassword
 
 @Composable
 fun LoginScreen(
     onNavigateToMain: () -> Unit,
-    onNavigateToRegister: () -> Unit
+    onNavigateToRegister: () -> Unit,
+    authViewModel: AuthViewModel = viewModel()
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
+    var showForgotPasswordDialog by remember { mutableStateOf(false) }
+
+    var context = LocalContext.current
 
     Box(
         modifier = Modifier
@@ -117,15 +128,7 @@ fun LoginScreen(
                     modifier = Modifier.padding(bottom = 32.dp)
                 )
 
-                Text(
-                    buildAnnotatedString {
-                        append("Email address")
-                        withStyle(SpanStyle(color = Color.Red)) {
-                            append(" *")
-                        }
-                    }
-                )
-
+                LabelWithAsterisk("Email address")
                 OutlinedTextField(
                     value = email,
                     onValueChange = { email = it },
@@ -137,14 +140,7 @@ fun LoginScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                Text(
-                    buildAnnotatedString {
-                        append("Password")
-                        withStyle(SpanStyle(color = Color.Red)) {
-                            append(" *")
-                        }
-                    }
-                )
+                LabelWithAsterisk("Password")
                 OutlinedTextField(
                     value = password,
                     onValueChange = {password = it},
@@ -168,21 +164,53 @@ fun LoginScreen(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // Forgot Password
-                TextButton(
-                    onClick = {},
-                    modifier = Modifier.align(Alignment.End)
-                ) {
-                    Text("Forgot Password?")
+                Text(
+                    text = "Forgot Password?",
+                    color = Color(0xFF415F91),
+                    fontSize = 14.sp,
+                    modifier = Modifier
+                        .align(Alignment.End)
+                        .padding(top = 8.dp)
+                        .clickable { showForgotPasswordDialog = true }
+                )
+                if (showForgotPasswordDialog) {
+                    ForgotPasswordDialog(
+                        onDismiss = { showForgotPasswordDialog = false },
+                        onResetClicked = { emailInput ->
+                            authViewModel.resetPassword(emailInput) { success, message ->
+                                showForgotPasswordDialog = false
+                                if (success) {
+                                    AppUtil.showToast(context, "Reset email sent!")
+                                } else {
+                                    AppUtil.showToast(context, message ?: "Oops, something went wrong")
+                                }
+                            }
+                        }
+                    )
                 }
             }
 
             // Login Button
             FilledTonalButton(
                 onClick = {
-                    Log.i("Credential", "Email: $email, Password: $password")
-                    onNavigateToMain()
-                          },
+                    val passwordRules = validatePassword(password)
+                    val isPasswordValid = passwordRules.all { it.isValid }
+
+                    when {
+                        email.isBlank() || password.isBlank() -> {
+                            AppUtil.showToast(context, "Please fill in all required fields")
+                        }
+                        else -> {
+                            authViewModel.login(email, password) { success, errorMessage ->
+                                if (success) {
+                                    onNavigateToMain()
+                                } else {
+                                    AppUtil.showToast(context, errorMessage ?: "Something went wrong")
+                                }
+                            }
+                        }
+                    }
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),
@@ -229,6 +257,14 @@ fun LoginScreen(
 }
 
 @Composable
+fun LabelWithAsterisk(label: String) {
+    Text(buildAnnotatedString {
+        append(label)
+        withStyle(SpanStyle(color = Color.Red)) { append(" *") }
+    })
+}
+
+@Composable
 fun DividerWithText(text: String) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Divider(
@@ -257,12 +293,11 @@ fun LoginGoogle(
         contract = ActivityResultContracts.StartActivityForResult()
     ) {
             result ->
-        // Add this check:
         if (result.resultCode == Activity.RESULT_OK) {
             GoogleSignInUtils.doGoogleSignIn(
                 context = context,
                 scope = coroutineScope,
-                launcher = null,  // Prevent infinite loop
+                launcher = null,
                 login = onSuccess
             )
         }
@@ -298,7 +333,7 @@ fun LoginGoogle(
                 )
                 Spacer(Modifier.width(12.dp))
                 Text(
-                    text = "Login with Google",
+                    text = "Continue with Google",
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Medium
                 )
@@ -307,8 +342,52 @@ fun LoginGoogle(
     }
 }
 
-//@Preview(showBackground = true)
-//@Composable
-//fun LoginPreview() {
-//    LoginScreen()
-//}
+@Composable
+fun ForgotPasswordDialog(
+    onDismiss: () -> Unit,
+    onResetClicked: (String) -> Unit
+) {
+    var email by remember { mutableStateOf("") }
+    var error by remember { mutableStateOf<String?>(null) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(text = "Forgot Password", fontWeight = FontWeight.Bold)
+        },
+        text = {
+            Column {
+                OutlinedTextField(
+                    value = email,
+                    onValueChange = {
+                        email = it
+                        error = null
+                    },
+                    label = { Text("Enter your email") },
+                    isError = error != null,
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
+                )
+                if (error != null) {
+                    Text(text = error!!, color = Color.Red, fontSize = 12.sp)
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = {
+                if (email.isBlank()) {
+                    error = "Email cannot be empty"
+                } else {
+                    onResetClicked(email)
+                }
+            }) {
+                Text("Reset Password")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        }
+    )
+}
