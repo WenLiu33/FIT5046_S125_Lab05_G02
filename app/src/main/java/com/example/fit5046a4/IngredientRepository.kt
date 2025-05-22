@@ -35,6 +35,6 @@ class IngredientRepository(application: Application) {
     }
 
     suspend fun markAllAsDeleted() {
-        ingredientDAO.markAllAsDeleted()
+        ingredientDAO.markAllAsDeleted() // for fridge clear
     }
 }

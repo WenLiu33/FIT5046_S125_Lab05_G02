@@ -44,5 +44,5 @@ interface IngredientDAO {
     suspend fun markIngredientAsDeleted(ingredientId: Int) // for edit ingredient removal
 
     @Query("UPDATE Ingredient SET isDeleted = 1")
-    suspend fun markAllAsDeleted() //for clear fridge function
+    suspend fun markAllAsDeleted() // for clear fridge function
 }

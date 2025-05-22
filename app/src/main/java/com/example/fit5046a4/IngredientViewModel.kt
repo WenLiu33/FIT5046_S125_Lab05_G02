@@ -36,7 +36,7 @@ class IngredientViewModel(application: Application) : AndroidViewModel(applicati
     }
 
     fun markIngredientAsDeleted(id: Int) = viewModelScope.launch(Dispatchers.IO) {
-        cRepository.markAsDeleted(id)
+        cRepository.markAsDeleted(id) // for edit removal
     }
 
     fun markAllIngredientsAsDeleted() = viewModelScope.launch(Dispatchers.IO) {

@@ -72,7 +72,7 @@ fun weeklySpendSundayToSaturday(ingredients: List<Ingredient>): List<Float> {
                     .atZone(ZoneId.systemDefault())
                     .toLocalDate() == date
             }
-            // apply normalization to originalQuantity to match the base unit of unitPrice
+            // apply normalisation to originalQuantity to match the base original unit of unitPrice
             .sumOf { normaliseQuantity(it.originalQuantity, it.originalUnit) * it.unitPrice.toDouble() }
 
             .toFloat()

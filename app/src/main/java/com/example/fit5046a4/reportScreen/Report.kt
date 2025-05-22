@@ -138,7 +138,7 @@ fun TotalFridgeValue(viewModel: IngredientViewModel = viewModel()) {
             )
         }
     } else {
-        // Sum price × quantity for each ingredient
+        // Sum price × normalised quantity for each ingredient
         ingredients.forEach { ingredient ->
             val normalizedQty = normalizeQuantity(ingredient.quantity, ingredient.unit)
             totalValue += ingredient.unitPrice * normalizedQty
@@ -341,6 +341,19 @@ fun Report(modifier: Modifier = Modifier) {
     }
 }
 
+/**
+ * Normalises a quantity value based on its unit to a base unit:
+ * - grams (g) are converted to kilograms (kg)
+ * - milliliters (ml) are converted to liters (L)
+ * - other units (kg, L, pcs, cups) are returned as-is
+ *
+ * This function is useful for ensuring consistency in calculations
+ * where all quantities should be represented in base units (kg or L).
+ *
+ * @param quantity The numeric amount of the item.
+ * @param unit The unit of the item (e.g., "g", "ml", "kg", "L", "pc(s)", "cup(s)").
+ * @return The normalized quantity as a Float.
+ */
 fun normalizeQuantity(quantity: Int, unit: String): Float {
     return when (unit) {
         "g" -> quantity / 1000f

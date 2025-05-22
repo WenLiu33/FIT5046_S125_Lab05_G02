@@ -172,6 +172,7 @@ fun FridgeItemList(viewModel: IngredientViewModel = viewModel()) {
                 Toast.makeText(context, "Item updated", Toast.LENGTH_SHORT).show()
             },
             onRemove = {
+                // marks item as deleted instead of removing from database to keep grocery spending logic
                 viewModel.markIngredientAsDeleted(it.id)
                 isEditDialogVisible = false
                 selectedIngredient = null
@@ -183,7 +184,7 @@ fun FridgeItemList(viewModel: IngredientViewModel = viewModel()) {
 
 /**
  * Composable representing the Fridge screen layout including image, ingredient list, and add button.
- * The first cimponent will be the FrigeItemList()
+ * The first component will be the FrigeItemList()
  * The second component will be the AddIngredients()
  * @param navController is passed in to allow navigation from inside this screen
  */
@@ -262,6 +263,8 @@ fun EditIngredientDialog(
     var selectedUnit by remember { mutableStateOf(ingredient.unit) }
     var isExpanded by remember { mutableStateOf(false) }
     val unitOptions = listOf("g", "kg", "ml", "L", "pc(s)", "cup(s)")
+
+    val context = LocalContext.current
 
     //Main layout of dialog
     AlertDialog(
@@ -382,6 +385,14 @@ fun EditIngredientDialog(
 
                 Button(
                     onClick = {
+                        if (quantity.toIntOrNull() == null || quantity.toInt() <= 0) {
+                            Toast.makeText(
+                                context,
+                                "Please enter a valid quantity > 0 or remove item.",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            return@Button
+                        }
                         val updated = ingredient.copy(
                             // not updating the originalQuantity as this is used for report calculations
                             // instead it is updating the current quantity of the item
@@ -462,6 +473,8 @@ fun ClearFridgeButton(viewModel: IngredientViewModel) {
                     }
 
                     // Fridge cleared
+                    // uses markALlIngredientsAsDeleted but doesn't actually remove from database
+                    // this is show the grocery spending is still accurate
                     Button(
                         onClick = {
                             viewModel.markAllIngredientsAsDeleted()
