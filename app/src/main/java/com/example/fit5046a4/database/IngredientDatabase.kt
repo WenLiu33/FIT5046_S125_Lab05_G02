@@ -11,7 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import androidx.sqlite.db.SupportSQLiteDatabase
 
-@Database(entities = [Ingredient::class], version = 3, exportSchema = false)
+@Database(entities = [Ingredient::class], version = 6, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class IngredientDatabase : RoomDatabase() {
 

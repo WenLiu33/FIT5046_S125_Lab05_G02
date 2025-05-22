@@ -6,7 +6,8 @@ import java.util.Date
 
 @Entity
 data class Ingredient(
-    @PrimaryKey(autoGenerate = false)
+    @PrimaryKey(autoGenerate = true)
+    val id: Int = 0,
     val name: String,
     val quantity: Int,
     val unit: String,
@@ -14,5 +15,7 @@ data class Ingredient(
     val insertDate: Date,
     val expiryDate: Date,
     val category: String,
-    val originalQuantity: Int
+    val originalQuantity: Int,
+    val originalUnit:String,
+    val isDeleted: Boolean = false
 )

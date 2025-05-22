@@ -16,6 +16,7 @@ class IngredientViewModel(application: Application) : AndroidViewModel(applicati
     }
 
     val allIngredients: Flow<List<Ingredient>> = cRepository.allIngredients
+    val allIngredientsIncludingDeleted: Flow<List<Ingredient>> = cRepository.getAllIngredientsIncludingDeleted() // for bar chart use
 
     fun insertIngredient(ingredient: Ingredient) = viewModelScope.launch(Dispatchers.IO){
         cRepository.insert(ingredient)
@@ -32,6 +33,14 @@ class IngredientViewModel(application: Application) : AndroidViewModel(applicati
         viewModelScope.launch {
             cRepository.deleteAllIngredients()
         }
+    }
+
+    fun markIngredientAsDeleted(id: Int) = viewModelScope.launch(Dispatchers.IO) {
+        cRepository.markAsDeleted(id) // for edit removal
+    }
+
+    fun markAllIngredientsAsDeleted() = viewModelScope.launch(Dispatchers.IO) {
+        cRepository.markAllAsDeleted()  //for clear fridge
     }
 
 }
