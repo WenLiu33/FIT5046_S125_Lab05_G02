@@ -26,6 +26,10 @@ import kotlinx.coroutines.tasks.await
 class GoogleSignInUtils {
 
     companion object {
+        /**
+         * Initiates Google Sign-In using the Credential Manager API.
+         * If successful, signs into Firebase and calls the `login()` callback.
+         */
         fun doGoogleSignIn(
             context: Context,
             scope: CoroutineScope,
@@ -40,18 +44,22 @@ class GoogleSignInUtils {
             scope.launch {
                 try {
                     val result = credentialManager.getCredential(context,request)
+
+                    // Handle the retrieved credential
                     when(result.credential){
                         is CustomCredential ->{
                             if(result.credential.type == GoogleIdTokenCredential.Companion.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL){
                                 val googleIdTokenCredential = GoogleIdTokenCredential.Companion.createFrom(result.credential.data)
                                 val googleTokenId = googleIdTokenCredential.idToken
-                                val authCredential = GoogleAuthProvider.getCredential(googleTokenId,null)
+                                val authCredential = GoogleAuthProvider.getCredential(googleTokenId,null) // Sign in to Firebase with Google token
                                 val user = try {
                                     Firebase.auth.signInWithCredential(authCredential).await().user
                                 } catch (e: Exception) {
                                     Log.e("GoogleAuth", "Firebase login failed", e)
                                     null
                                 }
+
+                                // If login is successful and not anonymous, proceed
                                 user?.let {
                                     if(it.isAnonymous.not()){
                                         login.invoke()
@@ -64,25 +72,29 @@ class GoogleSignInUtils {
                 }catch (e: NoCredentialException){
                     Log.e("GoogleAuth", "Error: ${e.javaClass.simpleName}", e)
 
+                    // If a Google account is available, launch account chooser
                     if (isGoogleAccountAvailable(context)) {
-                        // Retry only once to avoid infinite loop
                         launcher?.launch(getIntent())
                     } else {
-                        launcher?.launch(getIntent())
+                        launcher?.launch(getIntent()) // Fallback: open Google account settings
                     }
-
-
                 }catch (e: GetCredentialException){
                     e.printStackTrace()
                 }
             }
         }
 
+        /**
+         * Checks if the device has a Google account available.
+         */
         private fun isGoogleAccountAvailable(context: Context): Boolean {
             val accountManager = AccountManager.get(context)
             return accountManager.getAccountsByType("com.google").isNotEmpty()
         }
 
+        /**
+         * Returns an intent to add a Google account via device settings.
+         */
         private fun getIntent(): Intent {
             return Intent(Settings.ACTION_ADD_ACCOUNT).apply {
                 putExtra(Settings.EXTRA_ACCOUNT_TYPES, arrayOf("com.google"))
@@ -90,6 +102,9 @@ class GoogleSignInUtils {
             }
         }
 
+        /**
+         * Builds the credential option for Google Sign-In.
+         */
         private fun getCredentialOptions(context: Context): CredentialOption {
             return GetGoogleIdOption.Builder()
                 .setFilterByAuthorizedAccounts(false)

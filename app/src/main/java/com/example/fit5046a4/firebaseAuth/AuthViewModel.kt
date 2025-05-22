@@ -8,10 +8,16 @@ import com.google.firebase.auth.auth
 import com.google.firebase.firestore.firestore
 
 class AuthViewModel : ViewModel(){
-    private val auth = Firebase.auth
+    private val auth = Firebase.auth // Firebase authentication instance
 
-    private val firestore = Firebase.firestore
+    private val firestore = Firebase.firestore // Firestore database instance
 
+    /**
+     * Logs in a user with email and password.
+     * @param email User's email
+     * @param password User's password
+     * @param OnResult Callback to return success status and error message (if any)
+     */
     fun login(email: String, password: String, OnResult: (Boolean, String?)-> Unit){
         auth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener {
@@ -23,6 +29,12 @@ class AuthViewModel : ViewModel(){
             }
     }
 
+    /**
+     * Registers a new user and stores their info in Firestore.
+     * @param email User's email
+     * @param password User's password
+     * @param OnResult Callback to return success status and error message (if any)
+     */
     fun register(email: String, password: String, OnResult: (Boolean, String?)-> Unit){
         auth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener {
@@ -45,6 +57,12 @@ class AuthViewModel : ViewModel(){
             }
     }
 
+    /**
+     * Registers a new user and stores their info in Firestore.
+     * @param email User's email
+     * @param password User's password
+     * @param OnResult Callback to return success status and error message (if any)
+     */
     fun resetPassword(email: String, callback: (Boolean, String?) -> Unit) {
         FirebaseAuth.getInstance().sendPasswordResetEmail(email)
             .addOnCompleteListener { task ->
