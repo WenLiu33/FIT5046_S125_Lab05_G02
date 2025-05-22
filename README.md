@@ -26,6 +26,7 @@ helping users avoid duplicate purchases and reduce forgotten or wasted food.
 **🔧 Tech Stack:**
 - Kotlin
 - Jetpack Compose
+- firebase database
 
 <br>
 
