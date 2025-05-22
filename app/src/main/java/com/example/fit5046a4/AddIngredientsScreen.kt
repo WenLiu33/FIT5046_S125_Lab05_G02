@@ -85,6 +85,14 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
+
+// *** Helper function to normalize quantity into standard units
+fun normaliseQuantity(quantity: Int, unit: String): Float {
+    return when (unit) {
+        "g", "ml" -> quantity / 1000f  // convert to kg or L
+        else -> quantity.toFloat()
+    }
+}
 //*******FUNCTIONS BELOW********
 
 /**
@@ -280,15 +288,22 @@ fun AddIngredientsToDB(viewModel: IngredientViewModel, navController: NavControl
                         ).show()
                     }
 
+                    val qty = quantity.toInt()
+                    val totalPrice = unitPrice.toFloat()
+                    val normalizedQty = normaliseQuantity(qty, unit)
+                    val unitPricePerUnit = if (normalizedQty > 0f) totalPrice / normalizedQty else 0f
+
                     val ingredient = Ingredient(
                         name = name.trim().replaceFirstChar { it.uppercaseChar() },
                         quantity = quantity.toInt(),
                         unit = unit,
                         originalQuantity = quantity.toInt(),
-                        unitPrice = unitPrice.toFloat() / quantity.toInt(),
+                        originalUnit = unit,
+                        unitPrice = unitPricePerUnit,
                         insertDate = Date(),
                         expiryDate = expiryDate,
-                        category = category
+                        category = category,
+                        isDeleted = false
                     )
                     viewModel.insertIngredient(ingredient)
                     name = ""; quantity = ""; unit = ""; unitPrice = ""; expiryDateText =
@@ -535,7 +550,7 @@ fun CategoryDropDown(
 ) {
     // pre-defined grocery categories
     val categoryOptions =
-        listOf("Fruit", "Vegetables", "Proteins", "Dairy", "Grains", "Condiments", "Frozen goods")
+        listOf("Fruit", "Vegetables", "Proteins", "Dairy", "Grains", "Condiments", "Beverages", "Frozen goods")
     var isExpanded by remember { mutableStateOf(false) }
 
     ExposedDropdownMenuBox(

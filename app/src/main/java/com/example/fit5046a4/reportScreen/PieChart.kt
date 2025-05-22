@@ -36,7 +36,11 @@ fun categoryFridgeValue(ingredients: List<Ingredient>): List<PieEntry> {
     val sums: Map<String, Float> = ingredients
         .groupBy { it.category }
         .mapValues { (_, group) ->
-            group.sumOf { it.quantity * it.unitPrice.toDouble() }.toFloat()
+            group.sumOf {
+                // use normalised quantity for accurate value calculation
+                val normalizedQty = normaliseQuantity(it.quantity, it.unit)
+                (normalizedQty * it.unitPrice).toDouble()
+            }.toFloat()
         }
 
     // Grand total across all categories
@@ -56,6 +60,16 @@ fun categoryFridgeValue(ingredients: List<Ingredient>): List<PieEntry> {
         if (otherTotal > 0f) {
             add(PieEntry(otherTotal, "Others"))
         }
+    }
+}
+
+// *** helper function to normalize quantity to base unit (kg or L)
+fun normaliseQuantity(quantity: Int, unit: String): Float {
+    return when (unit) {
+        // converts grams to kg, ml to L
+        "g" -> quantity / 1000f
+        "ml" -> quantity / 1000f
+        else -> quantity.toFloat()
     }
 }
 
