@@ -5,7 +5,7 @@ This project is part of the FIT5046 Mobile and Distributed Computing Systems uni
 It uses Jetpack Compose and Kotlin to build a modern Android application: **FridgeFairy**
 
 **FridgeFairy** is a lifestyle and health-focused Android application that helps users manage their fridge virtually. 
-Designed to reduce food waste and improve meal planning, it allows users to easily add, remove, or view ingredients in real-time 
+Designed to reduce food waste and improve meal planning, it allows users to easily add, remove, or view items in real-time 
 — keeping their virtual fridge aligned with the actual one at home.
 
 By maintaining a clear view of fridge contents, **FridgeFairy** encourages smarter grocery shopping and cooking decisions, 
@@ -15,10 +15,10 @@ helping users avoid duplicate purchases and reduce forgotten or wasted food.
 
 
 **🧊 Key Features Include:**
-- **Real-time ingredient tracking** with quantity and expiry details
+- **Real-time item tracking** with quantity and expiry details
 - **Add, edit, or remove items** in the fridge
 - **Low stock and expiry awareness** to support timely usage
-- **Grocery spend reports and most-used ingredient stats**
+- **Grocery spend reports and current fridge value stats**
 - **Recipe suggestions** 
 
 <br>
@@ -26,7 +26,7 @@ helping users avoid duplicate purchases and reduce forgotten or wasted food.
 **🔧 Tech Stack:**
 - Kotlin
 - Jetpack Compose
-- firebase database
+- Firebase database
 
 <br>
 
