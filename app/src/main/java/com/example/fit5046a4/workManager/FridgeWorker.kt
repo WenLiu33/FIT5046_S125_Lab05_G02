@@ -41,6 +41,8 @@ class FridgeWorker (
      */
     override suspend fun doWork(): Result {
 
+        //need to demo
+        Log.d("FridgeWorker", "App started: Triggering scheduled job automatically.")
         // get all ingredients from room
         val db = IngredientDatabase.getDatabase(context)
         val ingredients: List<Ingredient> = db.ingredientDAO().getAllIngredientsOnce()
@@ -68,6 +70,7 @@ class FridgeWorker (
      * @return The result of the worker operation. Returns [Result.success()] after sending the notification.
      */
     private fun sendNotification(items: List<Ingredient>): Result {
+
         // AI-generated: if Android 13+, check for POST_NOTIFICATIONS permission
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
             ContextCompat.checkSelfPermission(

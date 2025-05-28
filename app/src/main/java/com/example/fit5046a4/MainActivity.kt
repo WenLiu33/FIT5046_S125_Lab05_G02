@@ -18,12 +18,21 @@ import java.time.LocalDateTime
 import androidx.core.content.ContextCompat
 import androidx.core.app.ActivityCompat
 import android.content.pm.PackageManager
+import android.util.Log
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
+import androidx.work.OneTimeWorkRequestBuilder
 
 
 class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // need to demo in the class
+        // Log to show app has started and job is triggered
+        Log.d("MainActivity", "App started: Triggering scheduled job automatically.")
+
 
         // notification permission
         requestNotificationPermission()
@@ -40,6 +49,16 @@ class MainActivity : ComponentActivity() {
         setContent {
             FIT5046A4Theme {
                 AppRoot()  // Set the app UI
+
+                // need to demo in the class
+                Button(onClick = {
+                    Log.d("MainActivity", "Trigger button clicked: Executing OneTime FridgeWorker")
+
+                    val testRequest = OneTimeWorkRequestBuilder<FridgeWorker>().build()
+                    WorkManager.getInstance(this).enqueue(testRequest)
+                }) {
+                    Text("Trigger Schedule Job")
+                }
             }
         }
     }
@@ -105,5 +124,9 @@ fun scheduleFridgeWorker(context: Context) {
         ExistingPeriodicWorkPolicy.UPDATE,
         request
     )
+
+
 }
+
+
 
